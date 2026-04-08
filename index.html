@@ -3584,7 +3584,7 @@ function editTrade(id){
   E('tradeSubmitBtn').textContent='💾 Update Trade';
   updateStratOpts();
   E('t-strat').value=t.strat||D.strategies[0]?.nm||'CPR Trend';
-  pvw();
+  pvw(); // auto-recalculates R:R from existing entry/SL/exit values
   om('tradeModal');
 }
 
@@ -4016,12 +4016,13 @@ function rjnl(page){
     renderMobJournal([]);return;
   }
   // XSS safe rendering using esc()
-  ww.innerHTML=`<table><thead><tr><th>DATE</th><th>SYM</th><th>DIR</th><th>ENTRY</th><th>EXIT</th><th>QTY</th><th>NET P&L</th><th>R:R</th><th>STRAT</th><th>PLAN</th><th>DISC</th><th>EMOTION</th><th>SQ</th><th></th></tr></thead><tbody>${sl.map(t=>{const p=pnl(t),pos=p.net>=0,disc=calcAutoDisc(t);return`<tr>
+  ww.innerHTML=`<table><thead><tr><th>DATE</th><th>SYM</th><th>DIR</th><th>ENTRY</th><th>EXIT</th><th>SL</th><th>QTY</th><th>NET P&L</th><th>R:R</th><th>STRAT</th><th>PLAN</th><th>DISC</th><th>EMOTION</th><th>SQ</th><th></th></tr></thead><tbody>${sl.map(t=>{const p=pnl(t),pos=p.net>=0,disc=calcAutoDisc(t);return`<tr>
     <td class="tm">${esc(t.dt)}</td>
     <td style="font-weight:700;">${esc(t.sym)}</td>
     <td><span class="tag ${t.dir==='Long'?'tem':'trb'}">${esc(t.dir)}</span></td>
     <td class="tm">₹${esc(String(t.en))}</td>
     <td class="tm">₹${esc(String(t.ex))}</td>
+    <td class="tm" style="color:var(--ruby);">${t.sl?'₹'+esc(String(t.sl)):'—'}</td>
     <td class="tm">${esc(String(t.qt))}</td>
     <td class="${pos?'tg':'tr2'}" style="font-size:13px;">${pos?'▲':'▼'} ${pos?'+':''}₹${F(Math.abs(p.net))}</td>
     <td class="tm">1:${esc(String(t.rr||'—'))}</td>
@@ -4073,14 +4074,24 @@ function delStrat(id){
 function subTrade(){
   if(!validateTrade())return;
   const editId=v('t-edit-id');
+  // Recalculate R:R from entry+SL+exit before saving
+  const _en=parseFloat(v('t-en'))||0,_ex=parseFloat(v('t-ex'))||0;
+  const _sl=parseFloat(v('t-sl'))||0,_dir=v('t-dir')||'Long';
+  let _rr=parseFloat(v('t-rr'))||0;
+  if(_en>0&&_sl>0&&_ex>0){
+    let _calc=0;
+    if(_dir==='Long'&&_en>_sl) _calc=(_ex-_en)/(_en-_sl);
+    else if(_dir==='Short'&&_sl>_en) _calc=(_en-_ex)/(_sl-_en);
+    if(_calc>0) _rr=parseFloat(_calc.toFixed(2));
+  }
   const t={
     id:editId||'T'+Date.now(),
     dt:v('t-dt'),tm:v('t-tm'),sym:v('t-sym').toUpperCase(),
     dir:v('t-dir'),strat:v('t-strat'),
-    en:parseFloat(v('t-en'))||0,ex:parseFloat(v('t-ex'))||0,
+    en:_en,ex:_ex,
     qt:parseFloat(v('t-qt'))||1,bk:parseFloat(v('t-bk'))||40,
-    sl:parseFloat(v('t-sl'))||0,tg:parseFloat(v('t-tg'))||0,
-    rr:parseFloat(v('t-rr'))||0,rp:parseFloat(v('t-rp'))||0,
+    sl:_sl,tg:parseFloat(v('t-tg'))||0,
+    rr:_rr,rp:parseFloat(v('t-rp'))||0,
     sq:v('t-sq')||'A',pl:v('t-pl')||'Yes',rl:v('t-rl')||'Yes',
     em:v('t-em')||'Calm 😌',nt:v('t-nt')
   };
@@ -4141,6 +4152,19 @@ function pvw(){
   const e2=parseFloat(v('t-en'))||0,x=parseFloat(v('t-ex'))||0,q=parseFloat(v('t-qt'))||1,bk=parseFloat(v('t-bk'))||0;
   const n=(x-e2)*q-bk;
   const el=E('pvwVal');if(el){el.textContent=(n>=0?'+':'')+'₹'+F(Math.abs(n));el.style.color=n>=0?'var(--emerald)':'var(--ruby)';}
+  // Auto-calculate R:R from entry + SL + exit
+  const sl=parseFloat(v('t-sl')||v('t-sl-q'))||0;
+  const dir=v('t-dir')||'Long';
+  const rrEl=E('t-rr');
+  if(e2>0&&sl>0&&x>0&&rrEl){
+    let calcRR=0;
+    if(dir==='Long'&&e2>sl) calcRR=(x-e2)/(e2-sl);
+    else if(dir==='Short'&&sl>e2) calcRR=(e2-x)/(sl-e2);
+    if(calcRR>0){
+      rrEl.value=parseFloat(calcRR.toFixed(2));
+      rrEl.style.color=calcRR>=1.5?'var(--emerald)':calcRR>=1?'var(--amber)':'var(--ruby)';
+    }
+  }
   const pl=v('t-pl'),rl=v('t-rl'),em=v('t-em'),sq=v('t-sq'),rr=parseFloat(v('t-rr'))||0;
   const fakeT={pl,rl,em,sq,rr};const disc=calcAutoDisc(fakeT);
   const discEl=E('pvwDisc');
@@ -5347,7 +5371,7 @@ function confirmFyersImport() {
       bk: brokerage,
       sl: 0,
       tg: 0,
-      rr: t.rr || 2.0,
+      rr: (t.rr && t.rr > 0) ? t.rr : 0,
       rp: 1.0,
       sq: t.sq || 'A',
       pl: t.pl || 'Yes',
@@ -6479,7 +6503,7 @@ function syncQuickSL(){
   const val = E('t-sl-q') ? E('t-sl-q').value : '';
   const slFull = E('t-sl');
   if(slFull && val) slFull.value = val;
-  pvw();
+  pvw(); // pvw() auto-calculates R:R from entry+SL+exit
 }
 
 
