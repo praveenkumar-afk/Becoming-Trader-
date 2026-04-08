@@ -5,14 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Praveen · Trading Intelligence OS v3</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800;12..96,900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- Firebase Realtime Database for cross-device sync -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
 function syncPageNav(el, page) {
   // Sync bottom mobile nav
   document.querySelectorAll('.mob-ni').forEach(n => {
     n.classList.toggle('on', n.dataset.mobPage === page);
   });
 }
-
 </script>
 <style>
 :root{
@@ -1841,6 +1844,46 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
   </div>
   <div class="stab-pane" id="stab-connection">
 
+    <!-- Firebase Sync Card -->
+    <div class="card mb12" style="border-color:rgba(74,144,245,.25);background:linear-gradient(145deg,rgba(74,144,245,.06),transparent);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:18px;">🔥</span>
+          <div>
+            <div class="ct">Firebase Real-time Sync</div>
+            <div style="font-size:10px;color:var(--text3);">Instant cross-device sync — mobile + web, always in sync</div>
+          </div>
+        </div>
+        <div id="fbStatus" style="font-size:11px;font-weight:700;color:var(--text3);">⚫ Not connected</div>
+      </div>
+
+      <!-- Config input (hidden when connected) -->
+      <div id="fbConfigArea">
+        <div class="fg">
+          <label>Firebase Config JSON</label>
+          <textarea id="fbConfigInput" rows="6" placeholder='{&#10;  "apiKey": "...",&#10;  "authDomain": "your-app.firebaseapp.com",&#10;  "databaseURL": "https://your-app-default-rtdb.firebaseio.com",&#10;  "projectId": "your-app",&#10;  "storageBucket": "your-app.appspot.com",&#10;  "messagingSenderId": "...",&#10;  "appId": "..."&#10;}' style="font-size:11px;font-family:var(--mono);min-height:130px;"></textarea>
+        </div>
+        <button class="btn bam bful" onclick="saveFbConfig()" style="background:linear-gradient(135deg,#4a90f5,#6ab0ff);margin-top:4px;">🔥 Connect Firebase</button>
+        <div style="margin-top:14px;padding:12px;background:var(--panel3);border-radius:var(--r2);">
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;">📋 One-time setup (3 minutes, free)</div>
+          <div style="font-size:11px;color:var(--text2);line-height:2;">
+            1. Go to <strong>console.firebase.google.com</strong> → Create project<br>
+            2. Build → <strong>Realtime Database</strong> → Create database (Start in test mode)<br>
+            3. Project Settings → Your apps → <strong>Add app (Web)</strong><br>
+            4. Copy the <strong>firebaseConfig</strong> object → paste above<br>
+            5. Click <strong>Connect Firebase</strong> — done! ✓
+          </div>
+        </div>
+      </div>
+
+      <!-- Connected state -->
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+        <button id="fbDisconnectBtn" class="btn bdgr" style="display:none;" onclick="disconnectFirebase()">Disconnect Firebase</button>
+        <button class="btn bgh" onclick="fbSave().then(()=>toast('Pushed to Firebase ✓','ok'))">⬆ Push Now</button>
+        <button class="btn bgh" onclick="fbLoad().then(r=>{if(r){applyRemoteData(r);renderAll();toast('Pulled from Firebase ✓','ok');}else toast('No remote data','err')})">⬇ Pull Now</button>
+      </div>
+    </div>
+
     <!-- Status Card -->
     <div class="card mb12" id="syncStatusCard">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
@@ -2352,6 +2395,13 @@ const PAGE_TITLES={home:'Home',playbook:'Playbook',challenges:'Challenges',troph
 // Change SHEETS_URL below after deploying your Apps Script
 const SHEETS_URL = '';  // <-- paste your Apps Script URL here after first setup
 let WS = SHEETS_URL || localStorage.getItem('tios_ws') || '';
+
+// ── FIREBASE: cross-device real-time sync ──
+let _fbApp = null;
+let _fbDB = null;
+let _fbRef = null;
+let _fbListener = null;
+let _fbConfig = (function(){ try { return JSON.parse(localStorage.getItem('tios_fb_config')||'null'); } catch(e){ return null; } })();
 let THEME=localStorage.getItem('tios_theme')||'dark';
 let APERIOD='month';
 let ASTART=null,AEND=null;
@@ -2365,13 +2415,16 @@ function ld(){try{return JSON.parse(localStorage.getItem('tios_data')||'null')||
 function lcfg(){try{return JSON.parse(localStorage.getItem('tios_cfg')||'null')||defCfg();}catch{return defCfg();}}
 function defCfg(){return{cap:1000000,maxl:5000,risk:1,maxt:3,tdays:2,czero:30,dream:null,savings:[],wsUrl:''};}
 function fd(){return{trades:[],capital:[],rules:[],strategies:[],mistakes:[],checklist:[],notes:{},emotion:{},ruleChecks:{}};}
-function sv(){localStorage.setItem('tios_data',JSON.stringify(D));}
-function scfg(){localStorage.setItem('tios_cfg',JSON.stringify(CFG));}
+function sv(){localStorage.setItem('tios_data',JSON.stringify(D));fbSave();}
+function scfg(){localStorage.setItem('tios_cfg',JSON.stringify(CFG));fbSave();}
 
 /* ════════════════════════════════════════
    BOOT
 ════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', async ()=>{
+  // Auto-init Firebase if config was previously saved
+  if (_fbConfig) { try { initFirebase(_fbConfig); } catch(e){} }
+
   // Apply theme immediately
   applyTheme(THEME, false);
   const now = new Date();
@@ -3633,6 +3686,7 @@ function cycleRuleCheck(id){
 function sv(){
   try{
     localStorage.setItem('tios_data',JSON.stringify(D));
+    fbSave(); // non-blocking Firebase write for cross-device sync
   }catch(e){
     if(e.name==='QuotaExceededError'){
       toast('⚠️ Storage full! Export backup now.','err');
@@ -5406,6 +5460,150 @@ function confirmFyersImport() {
    EDGEMIND GOOGLE SHEETS SYNC ENGINE
 ════════════════════════════════════════════════════════════ */
 
+/* ════════════════════════════════════════════════════════════
+   FIREBASE REAL-TIME SYNC ENGINE
+════════════════════════════════════════════════════════════ */
+
+function initFirebase(config) {
+  if (!config || !config.databaseURL) {
+    toast('Firebase config must include databaseURL','err');
+    return false;
+  }
+  try {
+    // Delete existing app if re-initialising
+    if (_fbApp) {
+      try { firebase.app('tios').delete(); } catch(e){}
+    }
+    _fbApp = firebase.initializeApp(config, 'tios');
+    _fbDB  = firebase.database(_fbApp);
+    _fbRef = _fbDB.ref('tradingdata');
+    _fbConfig = config;
+    localStorage.setItem('tios_fb_config', JSON.stringify(config));
+    startFbListener();
+    setConn('ok', 'Firebase ✓');
+    updateFbUI(true);
+    return true;
+  } catch(e) {
+    console.error('Firebase init failed:', e);
+    toast('Firebase error: ' + e.message, 'err');
+    setConn('err', 'Firebase error');
+    return false;
+  }
+}
+
+function disconnectFirebase() {
+  if (_fbRef && _fbListener) {
+    try { _fbRef.off('value', _fbListener); } catch(e){}
+  }
+  _fbApp = null; _fbDB = null; _fbRef = null; _fbListener = null; _fbConfig = null;
+  localStorage.removeItem('tios_fb_config');
+  localStorage.removeItem('tios_fb_ts');
+  setConn('', 'Not connected');
+  updateFbUI(false);
+  toast('Firebase disconnected','ok');
+}
+
+function startFbListener() {
+  if (!_fbRef) return;
+  if (_fbListener) { try { _fbRef.off('value', _fbListener); } catch(e){} }
+  let _firstLoad = true;
+  _fbListener = _fbRef.on('value', (snapshot) => {
+    // Skip very first event (that's the initial load, handled separately)
+    if (_firstLoad) { _firstLoad = false; return; }
+    const remote = snapshot.val();
+    if (!remote || !remote._ts) return;
+    const localTs = parseInt(localStorage.getItem('tios_fb_ts') || '0');
+    // Apply only if remote is meaningfully newer (>3s) to avoid echo-back loops
+    if (remote._ts > localTs + 3000) {
+      applyRemoteData(remote);
+      localStorage.setItem('tios_fb_ts', String(remote._ts));
+      renderAll();
+      toast('↓ Synced from another device', 'ok');
+    }
+  }, (err) => {
+    console.warn('Firebase listener error:', err);
+    setConn('err', 'Sync error');
+  });
+}
+
+async function fbLoad() {
+  if (!_fbRef) return null;
+  try {
+    const snapshot = await _fbRef.once('value');
+    return snapshot.val();
+  } catch(e) {
+    console.warn('Firebase load failed:', e);
+    return null;
+  }
+}
+
+async function fbSave() {
+  if (!_fbRef) return;
+  try {
+    const payload = buildFullPayload();
+    payload._ts = Date.now();
+    await _fbRef.set(payload);
+    localStorage.setItem('tios_fb_ts', String(payload._ts));
+    setConn('ok', 'Firebase ✓');
+  } catch(e) {
+    console.warn('Firebase save failed:', e);
+    setConn('err', 'Save failed');
+  }
+}
+
+function applyRemoteData(remote) {
+  if (remote.trades   && Array.isArray(remote.trades))   D.trades   = remote.trades;
+  if (remote.notes    && typeof remote.notes === 'object') D.notes   = remote.notes;
+  if (remote.capital  && Array.isArray(remote.capital))  D.capital  = remote.capital;
+  if (remote.checklist && Array.isArray(remote.checklist)) D.checklist = remote.checklist;
+  if (remote.rules    && Array.isArray(remote.rules))    D.rules    = remote.rules;
+  if (remote.settings && typeof remote.settings === 'object') {
+    CFG = {...defCfg(), ...remote.settings};
+    localStorage.setItem('tios_cfg', JSON.stringify(CFG));
+  }
+  if (remote.xp && typeof remote.xp === 'object') {
+    ENG.xp = remote.xp.xp || ENG.xp;
+    ENG.level = remote.xp.level || ENG.level;
+    ENG.discipline_streak = remote.xp.discipline_streak || ENG.discipline_streak;
+    ENG.best_streak = remote.xp.best_streak || ENG.best_streak;
+    if (remote.xp.challenges) ENG.challenges = remote.xp.challenges;
+    if (remote.xp.completed_challenges) ENG.completed_challenges = remote.xp.completed_challenges;
+    localStorage.setItem('tios_eng', JSON.stringify(ENG));
+  }
+  localStorage.setItem('tios_data', JSON.stringify(D));
+}
+
+function updateFbUI(connected) {
+  const statusEl = document.getElementById('fbStatus');
+  const configArea = document.getElementById('fbConfigArea');
+  const disconnectBtn = document.getElementById('fbDisconnectBtn');
+  if (statusEl) {
+    statusEl.textContent = connected ? '🟢 Connected' : '⚫ Not connected';
+    statusEl.style.color = connected ? 'var(--emerald)' : 'var(--text3)';
+  }
+  if (configArea) configArea.style.display = connected ? 'none' : 'block';
+  if (disconnectBtn) disconnectBtn.style.display = connected ? 'inline-flex' : 'none';
+}
+
+function saveFbConfig() {
+  const raw = (document.getElementById('fbConfigInput')||{}).value || '';
+  let config;
+  try {
+    config = JSON.parse(raw.trim());
+  } catch(e) {
+    toast('Invalid JSON — paste the full Firebase config object', 'err');
+    return;
+  }
+  if (initFirebase(config)) {
+    toast('Firebase connected! Data will sync across all devices ✓', 'ok');
+    fbSave(); // push current local data to Firebase immediately
+  }
+}
+
+/* ════════════════════════════════════════════════════════════
+   END FIREBASE ENGINE
+════════════════════════════════════════════════════════════ */
+
 /* _syncInProgress hoisted to top */
 /* _syncQueue hoisted to top */
 /* _lastSyncTime hoisted to top */
@@ -6335,12 +6533,40 @@ function hideLoader(){
 
 /* ── MAIN LOAD FUNCTION ── */
 async function loadFromSheetsOrLocal(){
-  // Show loader
+  // ── Try Firebase first (highest priority, real-time) ──
+  if (_fbConfig) {
+    setLoaderMsg('Connecting to Firebase…', 10);
+    try {
+      if (!_fbRef) initFirebase(_fbConfig);
+      if (_fbRef) {
+        setLoaderMsg('Fetching your data from Firebase…', 30, 'Real-time sync active');
+        const remote = await fbLoad();
+        if (remote && remote._ts) {
+          setLoaderMsg('Applying synced data…', 70);
+          await delay(200);
+          applyRemoteData(remote);
+          localStorage.setItem('tios_fb_ts', String(remote._ts));
+          setLoaderMsg('Ready!', 100, `Loaded ${(D.trades||[]).length} trades from Firebase`);
+          setConn('ok', 'Firebase ✓');
+          updateFbUI(true);
+          startFbListener(); // enable live updates
+          await delay(400);
+          hideLoader();
+          bootApp();
+          return;
+        }
+      }
+    } catch(fbErr) {
+      console.warn('Firebase load failed, falling back:', fbErr);
+    }
+  }
+
+  // ── Fall back to Google Sheets ──
   setLoaderMsg('Connecting to Google Sheets…', 10);
 
   // Check if WS URL is configured
   if(!WS){
-    setLoaderMsg('No Sheets URL configured — using local data', 80, 'Go to Settings → Connection to set up sync');
+    setLoaderMsg('No sync configured — using local data', 80, 'Go to Settings → Connection to set up Firebase sync');
     await delay(800);
     loadFromLocal();
     hideLoader();
@@ -6471,6 +6697,7 @@ function bootApp(){
     restoreSessionUI();
     updateFabVisibility('home');
     updateSyncUI();
+    updateFbUI(!!_fbRef); // reflect Firebase connection state in settings UI
   }, 200);
 }
 
