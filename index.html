@@ -3112,9 +3112,17 @@ function addCapEv(type){
   renderCapital();renderAll();
 }
 function saveAndConn(){
-  const url=E('wsUrl').value.trim();
-  if(url){WS=url;localStorage.setItem('tios_ws',url);tryConn();}
-  saveProfile();toast('Settings saved','ok');
+  const url = E('wsUrl') ? E('wsUrl').value.trim() : '';
+  if(!url){ toast('Paste your Apps Script URL first','err'); return; }
+  if(!url.includes('script.google.com')){
+    toast('URL must be a Google Apps Script web app URL','err'); return;
+  }
+  WS = url;
+  localStorage.setItem('tios_ws', url);
+  saveProfile();
+  toast('URL saved. Testing connection…','ok');
+  tryConn();
+  showBakeURLOption(url);
 }
 function saveProfile(){
   CFG.cap=parseFloat(E('s-cap').value)||1000000;
@@ -3957,7 +3965,7 @@ function goPage(p){
   if(p==='ritual'){renderChecklist();renderPastNotes();}
   if(p==='summary')genSummary(false);
   if(p==='home'){const tr2=fltPeriod(HOME_PERIOD);renderHomeKPIs(mtx(tr2),tr2);renderHomeExtras(mtx(tr2),tr2);renderWeeklyReview();}
-  if(p==='settings'){checkBackupReminder();updateStorageInfo();loadAutoSyncSettings();updateSyncUI();}
+  if(p==='settings'){checkBackupReminder();updateStorageInfo();loadAutoSyncSettings();updateSyncUI();if(WS)showBakeURLOption(WS);}
   if(p==='challenges'){renderChallengesPage();}
   if(p==='trophies'){renderTrophyPage();}
 }
