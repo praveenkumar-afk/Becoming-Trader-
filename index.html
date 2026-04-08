@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="dark">
-<head>
+
+<!DOCTYPE html><html lang="en" data-theme="light"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Praveen · Trading Intelligence OS v3</title>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800;12..96,900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800;12..96,900&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
 function syncPageNav(el, page) {
   // Sync bottom mobile nav
@@ -865,20 +864,17 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
 
 </style>
 </head>
-<body>
+<body data-new-gr-c-s-check-loaded="14.1280.0" data-gr-ext-installed="">
 
 <!-- SHEETS LOADING OVERLAY -->
-<div id="sheetsLoader" style="
-  position:fixed;top:0;left:0;right:0;bottom:0;
-  background:var(--bg);z-index:9999;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+<div id="sheetsLoader" style="position: fixed; inset: 0px; background: var(--bg); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px; opacity: 0; transition: opacity 0.4s;">
   <div style="font-size:36px;">📊</div>
   <div style="font-size:16px;font-weight:800;color:var(--text);">EdgeMind</div>
-  <div style="font-size:13px;color:var(--text3);" id="sheetsLoaderMsg">Loading your data…</div>
+  <div style="font-size:13px;color:var(--text3);" id="sheetsLoaderMsg">Sheets unavailable — using local data</div>
   <div style="width:200px;height:4px;background:var(--rim);border-radius:99px;overflow:hidden;">
-    <div id="sheetsLoaderBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--sapphire),var(--emerald));border-radius:99px;transition:width .5s;"></div>
+    <div id="sheetsLoaderBar" style="height: 100%; width: 80%; background: linear-gradient(90deg,var(--sapphire),var(--emerald)); border-radius: 99px; transition: width 0.5s;"></div>
   </div>
-  <div style="font-size:11px;color:var(--text3);margin-top:4px;" id="sheetsLoaderSub"></div>
+  <div style="font-size:11px;color:var(--text3);margin-top:4px;" id="sheetsLoaderSub">Sheets error: Could not reach Google Sheets: Failed to fetch</div>
 </div>
 
 <div class="app">
@@ -890,7 +886,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
     <div class="sb-sub">Trading Intelligence OS v3</div>
   </div>
   <nav class="sb-nav">
-    <div class="ni on" data-page="home"><span class="nico">🏠</span>Home</div>
+    <div class="ni" data-page="home"><span class="nico">🏠</span>Home</div>
     <div class="sg">Trading</div>
     <div class="ni" data-page="journal"><span class="nico">📓</span>Journal</div>
     <div class="ni" data-page="playbook"><span class="nico">🎮</span>Playbook</div>
@@ -909,12 +905,12 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
     <div class="ni" data-page="trophies"><span class="nico">🏅</span>Trophy Room</div>
     <div class="ni" data-page="capital"><span class="nico">💰</span>Capital</div>
     <div class="sg">System</div>
-    <div class="ni" data-page="settings"><span class="nico">⚙️</span>Settings</div>
+    <div class="ni on" data-page="settings"><span class="nico">⚙️</span>Settings</div>
   </nav>
   <!-- Dream Widget -->
   <div class="dw" onclick="goPage('dream')" id="dwWidget">
-    <div class="dw-hd"><span class="dw-nm" id="dwName">No Goal Set</span><button class="dw-ed" onclick="event.stopPropagation();om('dreamModal')">✏</button></div>
-    <div id="dwBody"><div style="font-size:10px;color:var(--text3);text-align:center;">Tap to set your dream →</div></div>
+    <div class="dw-hd"><span class="dw-nm" id="dwName">🎯 Trader</span><button class="dw-ed" onclick="event.stopPropagation();om('dreamModal')" fdprocessedid="ymx6v">✏</button></div>
+    <div id="dwBody"><div style="display:flex;align-items:center;gap:9px;"><div class="dw-ring"><svg viewBox="0 0 44 44" width="44" height="44"><circle cx="22" cy="22" r="18" fill="none" stroke="rgba(240,165,0,.15)" stroke-width="5"></circle><circle cx="22" cy="22" r="18" fill="none" stroke="var(--amber)" stroke-width="5" stroke-linecap="round" stroke-dasharray="7.420248000000002 132"></circle></svg><div class="dw-rpct">6%</div></div><div style="flex:1;min-width:0;"><div style="font-size:10px;color:var(--text3);">₹56,214 of ₹10,00,000</div><div style="font-size:9px;color:var(--text3);margin-top:2px;">83 days left</div></div></div><div class="dw-bar"><div class="dw-bf" style="width:5.621400000000001%"></div></div></div>
   </div>
 </aside>
 
@@ -922,31 +918,31 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
 <div class="main">
   <header class="topbar">
     <div style="display:flex;align-items:center;gap:10px;">
-      <div class="tp" id="pgTitle">Home</div>
+      <div class="tp" id="pgTitle">Settings</div>
     </div>
     <div class="tb-r">
       <div class="conn-badge"><div class="cd" id="cDot"></div><span id="cLbl">Offline</span></div>
-      <button class="btn bgh bsm" onclick="om('tradeModal')">＋ Log Trade</button>
-      <button class="btn bam bsm" onclick="goPage('dream')">🎯 My Goal</button>
-      <div class="tpill" onclick="toggleTheme()"><div class="tknob" id="tKnob">🌙</div></div>
+      <button class="btn bgh bsm" onclick="om('tradeModal')" fdprocessedid="jg6kjt">＋ Log Trade</button>
+      <button class="btn bam bsm" onclick="goPage('dream')" fdprocessedid="en6vn">🎯 My Goal</button>
+      <div class="tpill" onclick="toggleTheme()"><div class="tknob" id="tKnob">☀️</div></div>
     </div>
   </header>
 
   <div class="content" id="content">
 
 <!-- ════ HOME ════ -->
-<div class="page on" id="pg-home">
+<div class="page" id="pg-home">
   <!-- Hero -->
   <div class="home-hero">
     <div>
-      <div class="hero-date" id="heroDate"></div>
-      <div class="hero-greeting">Good <em id="timePart">morning</em>, <em>Praveen</em> 👋</div>
-      <div class="hero-quote" id="heroQuote"></div>
+      <div class="hero-date" id="heroDate">Wednesday, 8 April 2026</div>
+      <div class="hero-greeting">Good <em id="timePart">evening</em>, <em>Praveen 👋</em> 👋</div>
+      <div class="hero-quote" id="heroQuote">"Every loss is tuition. Every win is proof the edge exists." — Trading Wisdom</div>
     </div>
     <div class="hero-right">
       <div class="hero-level" id="heroLevel">TRADER LEVEL</div>
-      <div class="hero-stage" id="heroStage">—</div>
-      <div class="hero-stage-sub" id="heroStageSub"></div>
+      <div class="hero-stage" id="heroStage">Developing</div>
+      <div class="hero-stage-sub" id="heroStageSub">Consistency growing</div>
     </div>
   </div>
 
@@ -963,9 +959,9 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
   <div class="streak-display" id="streakDisplay">
     <div class="streak-flame">🔥</div>
     <div>
-      <div class="streak-num" id="home-streak-num">0</div>
+      <div class="streak-num" id="home-streak-num">2</div>
       <div class="streak-lbl">day discipline streak</div>
-      <div class="streak-best" id="home-streak-best">Best: 0 days</div>
+      <div class="streak-best" id="home-streak-best">Best: 2 days</div>
     </div>
     <div style="flex:1;"></div>
     <div style="text-align:right;">
@@ -978,11 +974,23 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
   <div class="mission-widget" id="missionWidget" style="display:none;">
     <div class="mw-header">
       <div class="mw-title">📋 THIS WEEK'S MISSIONS</div>
-      <div class="mw-week" id="mw-week-label"></div>
+      <div class="mw-week" id="mw-week-label">Week of 6 Apr</div>
     </div>
-    <div class="mw-missions" id="mw-missions-list"></div>
+    <div class="mw-missions" id="mw-missions-list"><div class="mw-item">
+          <div class="mw-check "></div>
+          <div class="mw-text ">Write one reflection per trading day</div>
+          <div class="mw-prog">1/5</div>
+        </div><div class="mw-item">
+          <div class="mw-check "></div>
+          <div class="mw-text ">Rate every trade emotion honestly</div>
+          <div class="mw-prog">1/5</div>
+        </div><div class="mw-item">
+          <div class="mw-check "></div>
+          <div class="mw-text ">Stick to defined setups only</div>
+          <div class="mw-prog">3/5</div>
+        </div></div>
     <div class="mw-footer">
-      <div class="mw-pts" id="mw-pts-label">0 / 0 missions complete</div>
+      <div class="mw-pts" id="mw-pts-label">0 / 3 complete</div>
       <div class="mw-all" onclick="goPage('challenges')">View all →</div>
     </div>
   </div>
@@ -990,14 +998,14 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
   <!-- Weekly review card -->
   <div class="weekly-card mb12" id="weeklyReview">
     <div class="weekly-label">📅 This Week at a Glance</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;" id="weeklyStats"></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;" id="weeklyStats"><div style="text-align:center;"><div style="font-size:18px;font-weight:900;font-family:var(--mono);color:var(--sapphire);">3</div><div style="font-size:10px;color:var(--text3);margin-top:2px;">Trades</div></div><div style="text-align:center;"><div style="font-size:18px;font-weight:900;font-family:var(--mono);color:var(--emerald);">+₹48,214</div><div style="font-size:10px;color:var(--text3);margin-top:2px;">P&amp;L</div></div><div style="text-align:center;"><div style="font-size:18px;font-weight:900;font-family:var(--mono);color:var(--amber);">66.7%</div><div style="font-size:10px;color:var(--text3);margin-top:2px;">Win Rate</div></div><div style="text-align:center;"><div style="font-size:18px;font-weight:900;font-family:var(--mono);color:var(--violet);">8.3/10</div><div style="font-size:10px;color:var(--text3);margin-top:2px;">Discipline</div></div></div>
   </div>
 
   <div class="g4">
-    <div class="kpi cam" onclick="goPage('journal')"><div class="kl">Net P&L — This Month</div><div class="kv am" id="h-pnl">₹0</div><div class="ks" id="h-pnl-s">0 trades</div><div class="kbar"><div class="kbf" style="background:linear-gradient(90deg,var(--amber),var(--amber2));width:0%" id="h-pnl-b"></div></div><div class="ki">💹</div></div>
-    <div class="kpi" onclick="goPage('analytics')"><div class="kl">Win Rate</div><div class="kv sa" id="h-wr">0%</div><div class="ks">Target ≥ 55%</div><div class="kbar"><div class="kbf" style="background:var(--sapphire);width:0%" id="h-wr-b"></div></div><div class="ki">🎯</div></div>
-    <div class="kpi" onclick="goPage('analytics')"><div class="kl">Profit Factor</div><div class="kv em" id="h-pf">—</div><div class="ks">Target ≥ 1.5</div><div class="kbar"><div class="kbf" style="background:var(--emerald);width:0%" id="h-pf-b"></div></div><div class="ki">⚡</div></div>
-    <div class="kpi" onclick="goPage('ritual')"><div class="kl">Discipline Score</div><div class="kv vl" id="h-disc">—</div><div class="ks">Auto-scored from rules</div><div class="kbar"><div class="kbf" style="background:var(--violet);width:0%" id="h-disc-b"></div></div><div class="ki">🧠</div></div>
+    <div class="kpi cam" onclick="goPage('journal')"><div class="kl">Net P&amp;L — This Month</div><div class="kv am" id="h-pnl">+₹48,214</div><div class="ks" id="h-pnl-s">3 trades</div><div class="kbar"><div class="kbf" style="background: linear-gradient(90deg,var(--amber),var(--amber2)); width: 48.214%;" id="h-pnl-b"></div></div><div class="ki">💹</div></div>
+    <div class="kpi" onclick="goPage('analytics')"><div class="kl">Win Rate</div><div class="kv sa" id="h-wr">66.7%</div><div class="ks">Target ≥ 55%</div><div class="kbar"><div class="kbf" style="background: var(--sapphire); width: 66.7%;" id="h-wr-b"></div></div><div class="ki">🎯</div></div>
+    <div class="kpi" onclick="goPage('analytics')"><div class="kl">Profit Factor</div><div class="kv em" id="h-pf">26.39</div><div class="ks">Target ≥ 1.5</div><div class="kbar"><div class="kbf" style="background: var(--emerald); width: 100%;" id="h-pf-b"></div></div><div class="ki">⚡</div></div>
+    <div class="kpi" onclick="goPage('ritual')"><div class="kl">Discipline Score</div><div class="kv vl" id="h-disc">8.3/10</div><div class="ks">Auto-scored from rules</div><div class="kbar"><div class="kbf" style="background: var(--violet); width: 83%;" id="h-disc-b"></div></div><div class="ki">🧠</div></div>
   </div>
 
   <div class="g73">
@@ -1009,34 +1017,34 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
           <div class="period-chip bsm" onclick="setEqTab('all',this)">All</div>
         </div>
       </div>
-      <div style="height:195px;"><canvas id="eqChart"></canvas></div>
+      <div style="height:195px;"><canvas id="eqChart" width="1352" height="511" style="display: block; box-sizing: border-box; height: 195px; width: 515px;"></canvas></div>
     </div>
     <div class="card">
       <div class="ch"><div class="ct">Today</div></div>
       <div style="display:flex;flex-direction:column;gap:8px;">
-        <div style="display:flex;justify-content:space-between;background:var(--panel2);border-radius:7px;padding:9px 12px;align-items:center;"><span style="font-size:11px;color:var(--text3);">P&L</span><span class="tm" id="td-pnl" style="font-size:15px;font-weight:800;">₹0</span></div>
-        <div style="display:flex;justify-content:space-between;background:var(--panel2);border-radius:7px;padding:9px 12px;"><span style="font-size:11px;color:var(--text3);">Trades</span><span class="tm" id="td-tc" style="font-weight:800;">0</span></div>
-        <div style="display:flex;justify-content:space-between;background:var(--panel2);border-radius:7px;padding:9px 12px;"><span style="font-size:11px;color:var(--text3);">Streak</span><span class="tm" id="td-streak" style="font-weight:700;">—</span></div>
-        <div style="display:flex;justify-content:space-between;background:var(--panel2);border-radius:7px;padding:9px 12px;"><span style="font-size:11px;color:var(--text3);">Ritual</span><span style="font-size:11px;font-weight:700;" id="td-cl">0/0</span></div>
-        <div style="display:flex;justify-content:space-between;background:var(--panel2);border-radius:7px;padding:9px 12px;"><span style="font-size:11px;color:var(--text3);">Capital Safe?</span><span id="td-capsafe" style="font-size:11px;font-weight:700;color:var(--emerald);">✅ Yes</span></div>
+        <div style="display:flex;justify-content:space-between;background:var(--panel2);border-radius:7px;padding:9px 12px;align-items:center;"><span style="font-size:11px;color:var(--text3);">P&amp;L</span><span class="tm" id="td-pnl" style="font-size: 15px; font-weight: 800; color: var(--emerald);">+₹39,342</span></div>
+        <div style="display:flex;justify-content:space-between;background:var(--panel2);border-radius:7px;padding:9px 12px;"><span style="font-size:11px;color:var(--text3);">Trades</span><span class="tm" id="td-tc" style="font-weight:800;">1</span></div>
+        <div style="display:flex;justify-content:space-between;background:var(--panel2);border-radius:7px;padding:9px 12px;"><span style="font-size:11px;color:var(--text3);">Streak</span><span class="tm" id="td-streak" style="font-weight:700;">🔥 2 wins</span></div>
+        <div style="display:flex;justify-content:space-between;background:var(--panel2);border-radius:7px;padding:9px 12px;"><span style="font-size:11px;color:var(--text3);">Ritual</span><span style="font-size:11px;font-weight:700;" id="td-cl">0/12</span></div>
+        <div style="display:flex;justify-content:space-between;background:var(--panel2);border-radius:7px;padding:9px 12px;"><span style="font-size:11px;color:var(--text3);">Capital Safe?</span><span id="td-capsafe" style="font-size:11px;font-weight:700;color:var(--emerald);">✅ Safe</span></div>
       </div>
     </div>
   </div>
 
   <div class="g3">
-    <div class="card"><div class="ch"><div class="ct">Win / Loss</div></div><div style="height:130px;"><canvas id="wlChart"></canvas></div><div class="srow" style="margin-top:9px;"><div class="sc"><div class="sv em" id="hw-w">0</div><div class="sl">Wins</div></div><div class="sc"><div class="sv rb" id="hw-l">0</div><div class="sl">Losses</div></div><div class="sc"><div class="sv" id="hw-t">0</div><div class="sl">Total</div></div></div></div>
-    <div class="card"><div class="ch"><div class="ct">Monthly</div></div><div style="height:170px;"><canvas id="monthChart"></canvas></div></div>
+    <div class="card"><div class="ch"><div class="ct">Win / Loss</div></div><div style="height:130px;"><canvas id="wlChart" width="787" height="341" style="display: block; box-sizing: border-box; height: 130px; width: 300px;"></canvas></div><div class="srow" style="margin-top:9px;"><div class="sc"><div class="sv em" id="hw-w">2</div><div class="sl">Wins</div></div><div class="sc"><div class="sv rb" id="hw-l">1</div><div class="sl">Losses</div></div><div class="sc"><div class="sv" id="hw-t">3</div><div class="sl">Total</div></div></div></div>
+    <div class="card"><div class="ch"><div class="ct">Monthly</div></div><div style="height:170px;"><canvas id="monthChart" width="787" height="446" style="display: block; box-sizing: border-box; height: 170px; width: 300px;"></canvas></div></div>
     <div class="card"><div class="ch"><div class="ct">🏆 Best Trades</div><span style="font-size:11px;color:var(--sapphire);cursor:pointer;" onclick="goPage('journal')">All →</span></div><div id="topTrades"></div></div>
   </div>
 
   <!-- Confidence -->
   <div class="card">
-    <div class="ch"><div class="ct">📡 Confidence Index</div><div class="kv" id="ci-score" style="font-size:18px;">—</div></div>
-    <div class="conf-gauge"><div id="ciKnob" class="conf-knob" style="left:5%;"></div></div>
+    <div class="ch"><div class="ct">📡 Confidence Index</div><div class="kv" id="ci-score" style="font-size:18px;">100/100</div></div>
+    <div class="conf-gauge"><div id="ciKnob" class="conf-knob" style="left: 97%;"></div></div>
     <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);">
       <span style="color:var(--ruby);">Caution</span><span style="color:var(--amber);">Building</span><span style="color:var(--emerald);">Trade Your Edge</span>
     </div>
-    <div style="text-align:center;font-size:11px;color:var(--text3);margin-top:6px;" id="ciLabel">Add trades to see your confidence index</div>
+    <div style="text-align:center;font-size:11px;color:var(--text3);margin-top:6px;" id="ciLabel">Based on 3 trades this month · WR 66.7% · PF 26.39 · Disc 8.3/10</div>
   </div>
 </div>
 
@@ -1044,10 +1052,10 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
   <div id="heatmapWrap" style="display:none;"></div>
 
   <!-- Extra stats — hidden placeholders (data computed, shown in Analytics) -->
-  <span id="h-aw" style="display:none"></span>
-  <span id="h-al" style="display:none"></span>
-  <span id="h-best" style="display:none"></span>
-  <span id="h-brok" style="display:none"></span>
+  <span id="h-aw" style="display:none">₹25,057</span>
+  <span id="h-al" style="display:none">₹1,899</span>
+  <span id="h-best" style="display:none" class="kv sa">+₹39,342</span>
+  <span id="h-brok" style="display:none">₹120</span>
 
 <!-- ════ JOURNAL ════ -->
 <div class="page" id="pg-journal">
@@ -1062,11 +1070,25 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
     <div class="pnav-chip" onclick="goPage('ritual')">✅ Ritual</div>
   </div>
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
-    <div id="journalPeriodBar"></div>
+    <div id="journalPeriodBar">
+    <div class="period-bar" style="margin-bottom:14px;">
+      <div class="period-chip on" onclick="setP('week',this)">This Week</div>
+      <div class="period-chip" onclick="setP('month',this)">This Month</div>
+      <div class="period-chip" onclick="setP('quarter',this)">Quarter</div>
+      <div class="period-chip" onclick="setP('fy',this)">FY (Apr–Mar)</div>
+      <div class="period-chip" onclick="setP('year',this)">Calendar Year</div>
+      <div class="period-chip" onclick="setP('all',this)">All Time</div>
+      <div class="period-chip" onclick="setP('custom',this)">Custom…</div>
+      <div class="date-range-inputs" id="customDates" style="display:none;">
+        <input type="date" id="pStart" onchange="applyCustom()">
+        <span style="color:var(--text3);font-size:12px;">→</span>
+        <input type="date" id="pEnd" onchange="applyCustom()">
+      </div>
+    </div></div>
     <div style="display:flex;gap:7px;"><input id="jsrch" placeholder="Search…" style="width:120px;font-size:12px;padding:6px 10px;" oninput="rjnl()"><select id="jfilter" style="width:120px;font-size:12px;padding:6px 8px;background:var(--panel2);border:1px solid var(--rim2);color:var(--text);border-radius:var(--r2);" onchange="rjnl()"><option value="">All Trades</option><option value="win">Wins Only</option><option value="loss">Losses Only</option><option value="plan-no">Plan Broken</option><option value="fomo">FOMO/Revenge</option><option value="aq">A/A+ Setups</option></select><label class="btn bgh bsm" style="cursor:pointer;display:inline-flex;align-items:center;gap:5px;">📥 Import Fyers<input type="file" accept=".csv" onchange="importFyersCSV(this)" style="display:none;"></label><button class="btn bam bsm" onclick="om('tradeModal')">＋ Log Trade</button></div>
   </div>
   <div class="g4 mb12">
-    <div class="kpi"><div class="kl">Net P&L</div><div class="kv" id="j-pnl" style="font-size:20px;">₹0</div><div class="ki">💹</div></div>
+    <div class="kpi"><div class="kl">Net P&amp;L</div><div class="kv" id="j-pnl" style="font-size:20px;">₹0</div><div class="ki">💹</div></div>
     <div class="kpi"><div class="kl">Win Rate</div><div class="kv sa" id="j-wr" style="font-size:20px;">0%</div><div class="ki">🎯</div></div>
     <div class="kpi"><div class="kl">Avg R:R</div><div class="kv em" id="j-rr" style="font-size:20px;">1:0</div><div class="ki">⚖️</div></div>
     <div class="kpi"><div class="kl">Avg Discipline</div><div class="kv vl" id="j-disc" style="font-size:20px;">—</div><div class="ki">🧠</div></div>
@@ -1236,7 +1258,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
         <span id="rg1-arr" style="font-size:10px;color:var(--text3);transition:transform .2s;">▾</span>
       </div>
       <div id="rg1" style="display:none;border:1px solid var(--rim);border-top:none;border-radius:0 0 var(--r2) var(--r2);overflow:hidden;">
-        <div class="rg-item">Tuesday & Thursday — mandatory trading days</div>
+        <div class="rg-item">Tuesday &amp; Thursday — mandatory trading days</div>
         <div class="rg-item">Other days — optional, genuine setup only</div>
         <div class="rg-item">Busy days — 1 trade only, 9:15–10:30 AM window</div>
       </div>
@@ -1269,7 +1291,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
         <div class="rg-item rg-rb">3 trades = session over. No exceptions.</div>
         <div class="rg-item rg-em">₹50K profit = close terminal immediately</div>
         <div class="rg-item rg-rb">₹50K loss = stop, no reload</div>
-        <div class="rg-item rg-am">₹1L P&L = next trading day off</div>
+        <div class="rg-item rg-am">₹1L P&amp;L = next trading day off</div>
       </div>
     </div>
 
@@ -1315,7 +1337,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
 
   <!-- Notes -->
   <div class="card" style="margin-top:0;">
-    <div class="ch"><div class="ct">📝 Today's Notes</div><div class="cs" id="noteDate"></div></div>
+    <div class="ch"><div class="ct">📝 Today's Notes</div><div class="cs" id="noteDate">Wednesday, 8 April 2026</div></div>
     <textarea id="dailyNotes" placeholder="How did today go? What worked? What cost you money? Key lesson…" style="min-height:85px;font-size:13px;"></textarea>
     <div style="display:flex;justify-content:flex-end;margin-top:9px;"><button class="btn bam" onclick="saveNotes()">💾 Save</button></div>
   </div>
@@ -1333,7 +1355,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
     <div class="pnav-chip" onclick="goPage('ritual')">✅ Ritual</div>
   </div>
   <div class="g4 mb12">
-    <div class="kpi"><div class="kl">Month P&L</div><div class="kv am" id="cal-pnl" style="font-size:20px;">₹0</div></div>
+    <div class="kpi"><div class="kl">Month P&amp;L</div><div class="kv am" id="cal-pnl" style="font-size:20px;">₹0</div></div>
     <div class="kpi"><div class="kl">Trading Days</div><div class="kv sa" id="cal-days" style="font-size:20px;">0</div></div>
     <div class="kpi"><div class="kl">Best Day</div><div class="kv em" id="cal-best" style="font-size:20px;">₹0</div></div>
     <div class="kpi"><div class="kl">Worst Day</div><div class="kv rb" id="cal-worst" style="font-size:20px;">₹0</div></div>
@@ -1368,7 +1390,21 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
     <div class="pnav-chip" onclick="goPage('calendar')">📅 Calendar</div>
     <div class="pnav-chip" onclick="goPage('psychology')">🧠 Psychology</div>
   </div>
-  <div id="analyticsPBar"></div>
+  <div id="analyticsPBar">
+    <div class="period-bar" style="margin-bottom:14px;">
+      <div class="period-chip on" onclick="setP('week',this)">This Week</div>
+      <div class="period-chip" onclick="setP('month',this)">This Month</div>
+      <div class="period-chip" onclick="setP('quarter',this)">Quarter</div>
+      <div class="period-chip" onclick="setP('fy',this)">FY (Apr–Mar)</div>
+      <div class="period-chip" onclick="setP('year',this)">Calendar Year</div>
+      <div class="period-chip" onclick="setP('all',this)">All Time</div>
+      <div class="period-chip" onclick="setP('custom',this)">Custom…</div>
+      <div class="date-range-inputs" id="customDates" style="display:none;">
+        <input type="date" id="pStart" onchange="applyCustom()">
+        <span style="color:var(--text3);font-size:12px;">→</span>
+        <input type="date" id="pEnd" onchange="applyCustom()">
+      </div>
+    </div></div>
 
   <!-- Activity Heatmap (moved from Home) -->
   <div class="card mb12">
@@ -1388,7 +1424,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
   </div>
 
   <div class="g4">
-    <div class="kpi cam"><div class="kl">Net P&L</div><div class="kv am" id="a-pnl">₹0</div><div class="ks" id="a-pnl-s"></div><div class="ki">💰</div></div>
+    <div class="kpi cam"><div class="kl">Net P&amp;L</div><div class="kv am" id="a-pnl">₹0</div><div class="ks" id="a-pnl-s"></div><div class="ki">💰</div></div>
     <div class="kpi"><div class="kl">Win Rate</div><div class="kv sa" id="a-wr">0%</div><div class="kbar"><div class="kbf" style="background:var(--sapphire);width:0%;" id="a-wr-b"></div></div><div class="ki">🎯</div></div>
     <div class="kpi"><div class="kl">Profit Factor</div><div class="kv em" id="a-pf">—</div><div class="ks">≥1.5 = edge</div><div class="ki">⚡</div></div>
     <div class="kpi"><div class="kl">Expectancy</div><div class="kv" id="a-exp">₹0</div><div class="ki">📈</div></div>
@@ -1398,15 +1434,15 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
     <div class="card"><div class="ch"><div class="ct">R:R Distribution</div></div><div style="height:190px;"><canvas id="a-rr"></canvas></div></div>
   </div>
   <div class="g3">
-    <div class="card"><div class="ch"><div class="ct">Monthly P&L</div></div><div style="height:165px;"><canvas id="a-month"></canvas></div></div>
+    <div class="card"><div class="ch"><div class="ct">Monthly P&amp;L</div></div><div style="height:165px;"><canvas id="a-month"></canvas></div></div>
     <div class="card"><div class="ch"><div class="ct">Day of Week</div></div><div style="height:165px;"><canvas id="a-day"></canvas></div></div>
-    <div class="card"><div class="ch"><div class="ct">Strategy P&L</div></div><div style="height:165px;"><canvas id="a-strat"></canvas></div></div>
+    <div class="card"><div class="ch"><div class="ct">Strategy P&amp;L</div></div><div style="height:165px;"><canvas id="a-strat"></canvas></div></div>
   </div>
   
   <!-- Extra analytics (Tradezella) -->
   <div class="g3 mb12">
-    <div class="card"><div class="ch"><div class="ct">⏰ Entry Time P&L</div></div><div style="height:130px;"><canvas id="a-time"></canvas></div></div>
-    <div class="card"><div class="ch"><div class="ct">🔤 Symbol P&L</div></div><div style="height:130px;"><canvas id="a-sym"></canvas></div></div>
+    <div class="card"><div class="ch"><div class="ct">⏰ Entry Time P&amp;L</div></div><div style="height:130px;"><canvas id="a-time"></canvas></div></div>
+    <div class="card"><div class="ch"><div class="ct">🔤 Symbol P&amp;L</div></div><div style="height:130px;"><canvas id="a-sym"></canvas></div></div>
     <div class="card"><div class="ch"><div class="ct">📐 R:R Trend</div></div><div style="height:130px;"><canvas id="a-rr2"></canvas></div></div>
   </div>
 <div class="g2">
@@ -1466,7 +1502,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
     </div>
   </div>
   <div class="g2">
-    <div class="card"><div class="ch"><div class="ct">Emotion vs P&L</div></div><div style="height:185px;"><canvas id="ps-emo"></canvas></div></div>
+    <div class="card"><div class="ch"><div class="ct">Emotion vs P&amp;L</div></div><div style="height:185px;"><canvas id="ps-emo"></canvas></div></div>
     <div class="card"><div class="ch"><div class="ct">Discipline Trend</div></div><div style="height:185px;"><canvas id="ps-disc"></canvas></div></div>
   </div>
   <div class="card">
@@ -1495,7 +1531,21 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
 <!-- ════ SUMMARY ════ -->
 <div class="page" id="pg-summary">
   <div class="ptitle">🤖 AI <em>Summary</em></div>
-  <div id="summaryPBar"></div>
+  <div id="summaryPBar">
+    <div class="period-bar" style="margin-bottom:14px;">
+      <div class="period-chip on" onclick="setP('week',this)">This Week</div>
+      <div class="period-chip" onclick="setP('month',this)">This Month</div>
+      <div class="period-chip" onclick="setP('quarter',this)">Quarter</div>
+      <div class="period-chip" onclick="setP('fy',this)">FY (Apr–Mar)</div>
+      <div class="period-chip" onclick="setP('year',this)">Calendar Year</div>
+      <div class="period-chip" onclick="setP('all',this)">All Time</div>
+      <div class="period-chip" onclick="setP('custom',this)">Custom…</div>
+      <div class="date-range-inputs" id="customDates" style="display:none;">
+        <input type="date" id="pStart" onchange="applyCustom()">
+        <span style="color:var(--text3);font-size:12px;">→</span>
+        <input type="date" id="pEnd" onchange="applyCustom()">
+      </div>
+    </div></div>
   <div class="summary-box mb12">
     <div class="sum-label">📡 TRADING INTELLIGENCE SUMMARY</div>
     <div class="sum-text" id="sumText">Select a period and click Generate to get your personalized trading analysis.</div>
@@ -1695,7 +1745,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
   <!-- Active Challenges -->
   <!-- Challenge tabs -->
   <div class="stab-bar" style="margin-bottom:14px;">
-    <div class="stab on" onclick="switchChalTab('active',this)">🔥 Active</div>
+    <div class="stab" onclick="switchChalTab('active',this)">🔥 Active</div>
     <div class="stab" onclick="switchChalTab('completed',this)">✅ Completed</div>
     <div class="stab" onclick="switchChalTab('history',this)">📜 History</div>
   </div>
@@ -1779,7 +1829,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
   <div class="badge-grid" id="badges-challenges"></div>
 </div>
 
-<div class="page" id="pg-settings">
+<div class="page on" id="pg-settings">
   <div class="ptitle">⚙️ <em>Settings</em></div>
   <div class="backup-banner" id="backupBanner" style="display:none;">
     <div style="font-size:20px;">💾</div>
@@ -1788,19 +1838,19 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
     <button class="btn bgh bsm" onclick="hideBackupBanner()">Dismiss</button>
   </div>
   <div class="stab-bar">
-    <div class="stab on" onclick="switchSettingsTab('profile',this)">👤 Profile</div>
+    <div class="stab" onclick="switchSettingsTab('profile',this)">👤 Profile</div>
     <div class="stab" onclick="switchSettingsTab('data',this)">💾 Data</div>
     <div class="stab" onclick="switchSettingsTab('appearance',this)">🎨 Appearance</div>
-    <div class="stab" onclick="switchSettingsTab('connection',this)">📡 Connection</div>
+    <div class="stab on" onclick="switchSettingsTab('connection',this)">📡 Connection</div>
   </div>
-  <div class="stab-pane on" id="stab-profile">
+  <div class="stab-pane" id="stab-profile">
     <div class="g2">
       <div class="card">
         <div class="ct" style="margin-bottom:14px;">Trading Profile</div>
-        <div class="fr mb12"><div class="fg"><label>Starting Capital (₹)</label><input type="number" id="s-cap" value="1000000"></div><div class="fg"><label>Max Daily Loss (₹)</label><input type="number" id="s-maxl" value="5000"></div></div>
-        <div class="fr mb12"><div class="fg"><label>Default Risk % / Trade</label><input type="number" id="s-risk" step="0.1" value="1.0"></div><div class="fg"><label>Max Trades / Day</label><input type="number" id="s-maxt" value="3"></div></div>
-        <div class="fr"><div class="fg"><label>Trading Days / Week</label><input type="number" id="s-tdays" value="2" min="1" max="5"></div><div class="fg"><label>Capital Zero Threshold (%)</label><input type="number" id="s-czero" value="30" step="5"></div></div>
-        <button class="btn bam" style="margin-top:12px;" onclick="saveProfile()">Save Profile</button>
+        <div class="fr mb12"><div class="fg"><label>Starting Capital (₹)</label><input type="number" id="s-cap" value="1000000" fdprocessedid="h9g8zj"></div><div class="fg"><label>Max Daily Loss (₹)</label><input type="number" id="s-maxl" value="5000" fdprocessedid="b8svoo"></div></div>
+        <div class="fr mb12"><div class="fg"><label>Default Risk % / Trade</label><input type="number" id="s-risk" step="0.1" value="1.0" fdprocessedid="yisqt"></div><div class="fg"><label>Max Trades / Day</label><input type="number" id="s-maxt" value="3" fdprocessedid="rzjd6p"></div></div>
+        <div class="fr"><div class="fg"><label>Trading Days / Week</label><input type="number" id="s-tdays" value="2" min="1" max="5" fdprocessedid="5bnp7k"></div><div class="fg"><label>Capital Zero Threshold (%)</label><input type="number" id="s-czero" value="30" step="5" fdprocessedid="rsgs7"></div></div>
+        <button class="btn bam" style="margin-top:12px;" onclick="saveProfile()" fdprocessedid="18hsot">Save Profile</button>
       </div>
       <div class="card"><div class="ct" style="margin-bottom:10px;">About</div><div style="font-size:12px;color:var(--text3);line-height:1.8;">Praveen · Trading Intelligence OS v3<br>Built with ❤️ for disciplined trading.<br>Data stored locally in your browser.</div></div>
     </div>
@@ -1808,7 +1858,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
   <div class="stab-pane" id="stab-data">
     <div class="g2">
       <div class="card">
-        <div class="ct" style="margin-bottom:14px;">💾 Backup & Restore</div>
+        <div class="ct" style="margin-bottom:14px;">💾 Backup &amp; Restore</div>
         <div style="display:flex;flex-direction:column;gap:9px;">
           <button class="btn bgh" onclick="expData()">📥 Export JSON Backup</button>
           <button class="btn bgh" onclick="expCSV()">📊 Export Trades CSV</button>
@@ -1824,14 +1874,14 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
         </div>
       </div>
     </div>
-    <div class="card" style="margin-top:12px;"><div class="ct" style="margin-bottom:10px;">Storage Usage</div><div id="storageInfo"></div></div>
+    <div class="card" style="margin-top:12px;"><div class="ct" style="margin-bottom:10px;">Storage Usage</div><div id="storageInfo"><div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--rim);"><span style="color:var(--text2);">tios_data</span><span class="tm">7.4 KB</span></div><div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--rim);"><span style="color:var(--text2);">tios_cfg</span><span class="tm">0.2 KB</span></div><div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--rim);"><span style="color:var(--text2);">tios_theme</span><span class="tm">0.0 KB</span></div><div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--rim);"><span style="color:var(--text2);">tios_ws</span><span class="tm">0.1 KB</span></div><div style="display:flex;justify-content:space-between;padding:6px 0;font-weight:700;"><span>Total</span><span class="tm" style="color:var(--amber);">7.7 KB / ~5120 KB</span></div></div></div>
   </div>
   <div class="stab-pane" id="stab-appearance">
     <div class="card">
-      <div class="ct" style="margin-bottom:14px;">Theme & Display</div>
+      <div class="ct" style="margin-bottom:14px;">Theme &amp; Display</div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--rim);">
-        <div><div style="font-size:13px;font-weight:600;">Theme</div><div style="font-size:11px;color:var(--text3);">Current: <span id="thLabel">Dark</span></div></div>
-        <div class="tpill" onclick="toggleTheme()"><div class="tknob">🌙</div></div>
+        <div><div style="font-size:13px;font-weight:600;">Theme</div><div style="font-size:11px;color:var(--text3);">Current: <span id="thLabel">Light</span></div></div>
+        <div class="tpill" onclick="toggleTheme()"><div class="tknob">☀️</div></div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;">
         <div><div style="font-size:13px;font-weight:600;">Your Name</div><div style="font-size:11px;color:var(--text3);">Shown in greeting</div></div>
@@ -1839,31 +1889,31 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
       </div>
     </div>
   </div>
-  <div class="stab-pane" id="stab-connection">
+  <div class="stab-pane on" id="stab-connection">
 
     <!-- Status Card -->
     <div class="card mb12" id="syncStatusCard">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
         <div class="ct">📡 Google Sheets Sync</div>
-        <div class="conn-badge"><div class="cd" id="sDot"></div><span id="sLbl">Not connected</span></div>
+        <div class="conn-badge"><div class="cd" id="sDot"></div><span id="sLbl">Offline</span></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
         <div style="background:var(--panel3);border-radius:var(--r2);padding:10px;text-align:center;">
-          <div style="font-size:18px;font-weight:900;font-family:var(--mono);color:var(--sapphire);" id="sync-trade-count">—</div>
+          <div style="font-size:18px;font-weight:900;font-family:var(--mono);color:var(--sapphire);" id="sync-trade-count">4</div>
           <div style="font-size:10px;color:var(--text3);">Trades synced</div>
         </div>
         <div style="background:var(--panel3);border-radius:var(--r2);padding:10px;text-align:center;">
-          <div style="font-size:18px;font-weight:900;font-family:var(--mono);color:var(--emerald);" id="sync-last-time">—</div>
+          <div style="font-size:18px;font-weight:900;font-family:var(--mono);color:var(--emerald);" id="sync-last-time">05:10 pm</div>
           <div style="font-size:10px;color:var(--text3);">Last sync</div>
         </div>
         <div style="background:var(--panel3);border-radius:var(--r2);padding:10px;text-align:center;">
-          <div style="font-size:18px;font-weight:900;font-family:var(--mono);color:var(--amber);" id="sync-pending-count">—</div>
+          <div style="font-size: 18px; font-weight: 900; font-family: var(--mono); color: var(--emerald);" id="sync-pending-count">0</div>
           <div style="font-size:10px;color:var(--text3);">Pending</div>
         </div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn bam" style="flex:1;" onclick="syncNow()" id="syncNowBtn">🔄 Sync Now</button>
-        <button class="btn bgh" style="flex:1;" onclick="testConn()">🔌 Test Connection</button>
+        <button class="btn bam" style="flex:1;" onclick="syncNow()" id="syncNowBtn" fdprocessedid="5ldqut">🔄 Sync Now</button>
+        <button class="btn bgh" style="flex:1;" onclick="testConn()" fdprocessedid="9fgazs">🔌 Test Connection</button>
       </div>
       <!-- Sync progress bar -->
       <div id="syncProgress" style="display:none;margin-top:10px;">
@@ -1879,12 +1929,12 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
       <div class="ct" style="margin-bottom:4px;">⚙️ Setup</div>
       <div style="font-size:11px;color:var(--text3);margin-bottom:12px;">Paste your Google Apps Script Web App URL below</div>
       <div class="fg"><label>Apps Script Web App URL</label>
-        <input id="wsUrl" placeholder="https://script.google.com/macros/s/…/exec" style="font-size:11px;"></div>
+        <input id="wsUrl" placeholder="https://script.google.com/macros/s/…/exec" style="font-size:11px;" fdprocessedid="tvvwh7r"></div>
       <div style="display:flex;gap:8px;margin-top:8px;">
-        <button class="btn bam" style="flex:2;" onclick="saveAndConn()">⚡ Save & Connect</button>
-        <button class="btn bdgr" style="flex:1;" onclick="disconnectSync()">Disconnect</button>
+        <button class="btn bam" style="flex:2;" onclick="saveAndConn()" fdprocessedid="q746cp">⚡ Save &amp; Connect</button>
+        <button class="btn bdgr" style="flex:1;" onclick="disconnectSync()" fdprocessedid="mk3q9r">Disconnect</button>
       </div>
-      <div id="bakeUrlWrap"></div>
+      <div id="bakeUrlWrap" style="display: block;"><div style="margin-top:12px;padding:12px;background:rgba(16,201,122,.06);border:1px solid rgba(16,201,122,.2);border-radius:var(--r2);"><div style="font-size:12px;font-weight:700;color:var(--emerald);margin-bottom:6px;">📱 Make it work on ALL devices</div><div style="font-size:11px;color:var(--text2);margin-bottom:8px;">Download an updated HTML with your Sheets URL baked in. Upload to GitHub — mobile auto-connects forever.</div><button class="btn bam" onclick="downloadBakedHTML()" fdprocessedid="fojm5">⬇️ Download Mobile-Ready HTML</button></div></div>
       <div style="margin-top:14px;padding:12px;background:var(--panel3);border-radius:var(--r2);">
         <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;">📋 One-time setup (5 minutes)</div>
         <div style="font-size:11px;color:var(--text2);line-height:1.9;">
@@ -1894,7 +1944,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
           4. Click <strong>Deploy → New deployment</strong><br>
           5. Type: <strong>Web App</strong> | Execute as: <strong>Me</strong> | Access: <strong>Anyone</strong><br>
           6. Copy the Web App URL → paste above<br>
-          7. Click <strong>Save & Connect</strong>
+          7. Click <strong>Save &amp; Connect</strong>
         </div>
       </div>
     </div>
@@ -1909,27 +1959,27 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
             <div style="font-size:11px;color:var(--text3);">Pushes to Sheets after every trade</div>
           </div>
           <label class="toggle-sw">
-            <input type="checkbox" id="autoSyncTrade" checked onchange="saveAutoSync()">
+            <input type="checkbox" id="autoSyncTrade" checked="" onchange="saveAutoSync()">
             <span class="toggle-knob"></span>
           </label>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--rim);">
           <div>
-            <div style="font-size:13px;font-weight:600;">Auto-sync notes & ritual</div>
+            <div style="font-size:13px;font-weight:600;">Auto-sync notes &amp; ritual</div>
             <div style="font-size:11px;color:var(--text3);">Syncs notes and checklist daily</div>
           </div>
           <label class="toggle-sw">
-            <input type="checkbox" id="autoSyncNotes" checked onchange="saveAutoSync()">
+            <input type="checkbox" id="autoSyncNotes" checked="" onchange="saveAutoSync()">
             <span class="toggle-knob"></span>
           </label>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;">
           <div>
-            <div style="font-size:13px;font-weight:600;">Auto-sync challenges & XP</div>
+            <div style="font-size:13px;font-weight:600;">Auto-sync challenges &amp; XP</div>
             <div style="font-size:11px;color:var(--text3);">Syncs engagement data weekly</div>
           </div>
           <label class="toggle-sw">
-            <input type="checkbox" id="autoSyncEng" checked onchange="saveAutoSync()">
+            <input type="checkbox" id="autoSyncEng" checked="" onchange="saveAutoSync()">
             <span class="toggle-knob"></span>
           </label>
         </div>
@@ -1962,7 +2012,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
 </nav>
 
 <!-- MOBILE FAB -->
-<div class="mob-fab" id="mobFab" onclick="om('tradeModal')" style="display:none;">＋</div>
+<div class="mob-fab" id="mobFab" onclick="om('tradeModal')" style="display: none;">＋</div>
 
 <!-- MOBILE DRAWER OVERLAY -->
 <div class="mob-overlay" id="mobOverlay" onclick="closeMobDrawer()"></div>
@@ -1986,7 +2036,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
   </div>
   <div style="margin-top:14px;display:flex;gap:8px;">
     <button class="btn bam" style="flex:1;" onclick="om('tradeModal');closeMobDrawer()">＋ Log Trade</button>
-    <div class="tpill" onclick="toggleTheme()"><div class="tknob">🌙</div></div>
+    <div class="tpill" onclick="toggleTheme()"><div class="tknob">☀️</div></div>
   </div>
 </div>
 
@@ -2008,7 +2058,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
     </div>
     <div class="fr" style="margin-bottom:10px;">
       <div class="fg"><label>Direction</label><select id="t-dir"><option value="Long">Long (Buy)</option><option value="Short">Short (Sell)</option></select></div>
-      <div class="fg"><label>Strategy</label><select id="t-strat" onchange="pvw()"></select></div>
+      <div class="fg"><label>Strategy</label><select id="t-strat" onchange="pvw()"><option value="CPR Trend">CPR Trend</option><option value="Reversal">Reversal</option><option value="Swing Breakout">Swing Breakout</option><option value="Opening Range">Opening Range</option><option value="Other">Other</option></select></div>
     </div>
     <div class="fr3" style="margin-bottom:10px;">
       <div class="fg"><label>Entry (₹)</label><input type="number" id="t-en" step="0.05" oninput="pvw()"></div>
@@ -2043,10 +2093,10 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
       <div class="fg"><label>Rules Followed?</label><select id="t-rl" onchange="pvw()"><option value="Yes">✅ Yes</option><option value="Partial">⚡ Partial</option><option value="No">❌ No</option></select></div>
     </div>
   </div>
-  <div class="fg" style="margin-bottom:10px;"><label>Notes & Learnings</label><textarea id="t-nt" placeholder="What happened? Key levels? What did you learn?"></textarea></div>
+  <div class="fg" style="margin-bottom:10px;"><label>Notes &amp; Learnings</label><textarea id="t-nt" placeholder="What happened? Key levels? What did you learn?"></textarea></div>
   <div id="tradeWarn" style="display:none;background:rgba(240,64,96,.08);border:1px solid rgba(240,64,96,.2);border-radius:var(--r2);padding:8px 12px;font-size:11px;color:var(--ruby);margin-bottom:10px;"></div>
   <input type="hidden" id="t-edit-id" value="">
-  <div class="pvw"><span style="font-size:11px;color:var(--text3);">Est. Net P&L</span><span id="pvwVal" style="font-size:18px;font-weight:800;font-family:var(--mono);color:var(--text);">₹0</span><span id="pvwDisc" style="font-size:11px;color:var(--text3);">Disc: —</span></div>
+  <div class="pvw"><span style="font-size:11px;color:var(--text3);">Est. Net P&amp;L</span><span id="pvwVal" style="font-size:18px;font-weight:800;font-family:var(--mono);color:var(--text);">₹0</span><span id="pvwDisc" style="font-size:11px;color:var(--text3);">Disc: —</span></div>
   <button class="btn bam bful" onclick="subTrade()" id="tradeSubmitBtn">⚡ Save Trade</button>
 </div>
 </div>
@@ -2127,14 +2177,14 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
   <button class="btn bam bful" onclick="subRule()" id="ruleSubmitBtn">Save Rule</button>
 </div>
 </div>
-</div>
+
 
 <!-- MISTAKE -->
 <div class="ov" id="mistakeModal">
 <div class="modal msm">
   <div class="mt">⚠️ Log Mistake</div><button class="mc" onclick="cm('mistakeModal')">✕</button>
   <div class="fg"><label>What went wrong?</label><textarea id="m-desc" placeholder="Be honest and specific…"></textarea></div>
-  <div class="fr" style="margin-bottom:10px;"><div class="fg"><label>Category</label><select id="m-cat"><option>FOMO Entry</option><option>Revenge Trade</option><option>No Stop Loss</option><option>Early Exit</option><option>Overtrading</option><option>Rule Violation</option><option>Emotion Trade</option><option>Other</option></select></div><div class="fg"><label>P&L Cost (₹)</label><input type="number" id="m-cost"></div></div>
+  <div class="fr" style="margin-bottom:10px;"><div class="fg"><label>Category</label><select id="m-cat"><option>FOMO Entry</option><option>Revenge Trade</option><option>No Stop Loss</option><option>Early Exit</option><option>Overtrading</option><option>Rule Violation</option><option>Emotion Trade</option><option>Other</option></select></div><div class="fg"><label>P&amp;L Cost (₹)</label><input type="number" id="m-cost"></div></div>
   <div class="fg" style="margin-bottom:14px;"><label>How to prevent next time</label><textarea id="m-fix" style="min-height:50px;" placeholder="Specific action…"></textarea></div>
   <button class="btn bam bful" onclick="subMistake()">Log Mistake</button>
 </div>
@@ -2185,7 +2235,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
 </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast">URL saved. Testing connection…</div>
 
 <!-- FYERS IMPORT PREVIEW MODAL -->
 <div class="ov" id="importPreviewModal">
@@ -2283,7 +2333,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
     <div class="fg"><label>XP Reward</label>
       <select id="chal-xp">
         <option value="50">50 XP — Easy</option>
-        <option value="100" selected>100 XP — Medium</option>
+        <option value="100" selected="">100 XP — Medium</option>
         <option value="200">200 XP — Hard</option>
         <option value="500">500 XP — Epic</option>
       </select>
@@ -2297,7 +2347,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
 </div>
 </div>
 
-<div class="undo-toast" id="undoToast"><span id="undoMsg">Trade deleted</span><button class="undo-btn" onclick="doUndo()">UNDO</button></div>
+<div class="undo-toast" id="undoToast"><span id="undoMsg">Trade deleted</span><button class="undo-btn" onclick="doUndo()" fdprocessedid="5lzzg">UNDO</button></div>
 
 
 <script>
@@ -2342,7 +2392,7 @@ const PAGE_TITLES={home:'Home',playbook:'Playbook',challenges:'Challenges',troph
 ════════════════════════════════════════ */
 // ── SHEETS URL: Set this once and bake into HTML ──
 // Change SHEETS_URL below after deploying your Apps Script
-const SHEETS_URL = '';  // <-- paste your Apps Script URL here after first setup
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyPWM68_CVHpv4fBjHXIwgFomOWQi55WT-Z_xwQu7J0uC3I9v3HX2yobWkcIK2TUrvw/exec';  // set on 8/4/2026
 let WS = SHEETS_URL || localStorage.getItem('tios_ws') || '';
 let THEME=localStorage.getItem('tios_theme')||'dark';
 let APERIOD='month';
@@ -3112,17 +3162,9 @@ function addCapEv(type){
   renderCapital();renderAll();
 }
 function saveAndConn(){
-  const url = E('wsUrl') ? E('wsUrl').value.trim() : '';
-  if(!url){ toast('Paste your Apps Script URL first','err'); return; }
-  if(!url.includes('script.google.com')){
-    toast('URL must be a Google Apps Script web app URL','err'); return;
-  }
-  WS = url;
-  localStorage.setItem('tios_ws', url);
-  saveProfile();
-  toast('URL saved. Testing connection…','ok');
-  tryConn();
-  showBakeURLOption(url);
+  const url=E('wsUrl').value.trim();
+  if(url){WS=url;localStorage.setItem('tios_ws',url);tryConn();}
+  saveProfile();toast('Settings saved','ok');
 }
 function saveProfile(){
   CFG.cap=parseFloat(E('s-cap').value)||1000000;
@@ -3965,7 +4007,7 @@ function goPage(p){
   if(p==='ritual'){renderChecklist();renderPastNotes();}
   if(p==='summary')genSummary(false);
   if(p==='home'){const tr2=fltPeriod(HOME_PERIOD);renderHomeKPIs(mtx(tr2),tr2);renderHomeExtras(mtx(tr2),tr2);renderWeeklyReview();}
-  if(p==='settings'){checkBackupReminder();updateStorageInfo();loadAutoSyncSettings();updateSyncUI();if(WS)showBakeURLOption(WS);}
+  if(p==='settings'){checkBackupReminder();updateStorageInfo();loadAutoSyncSettings();updateSyncUI();}
   if(p==='challenges'){renderChallengesPage();}
   if(p==='trophies'){renderTrophyPage();}
 }
@@ -6451,3 +6493,4 @@ function downloadBakedHTML(){
 }
 
 </script>
+<span id="PING_IFRAME_FORM_DETECTION" style="display: none;"></span></body><grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration></html>
