@@ -905,7 +905,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
     <div class="sg">Journey</div>
     <div class="ni" data-page="dream"><span class="nico">🎯</span>Dream Challenge</div>
     <div class="ni" data-page="path"><span class="nico">🏆</span>Path to Pro</div>
-    <div class="ni" data-page="challenges"><span class="nico">🎯</span>Challenges</div>
+    <div class="ni" data-page="challenges" style="display:none;"><span class="nico">🎯</span>Challenges</div>
     <div class="ni" data-page="trophies"><span class="nico">🏅</span>Trophy Room</div>
     <div class="ni" data-page="capital"><span class="nico">💰</span>Capital</div>
     <div class="sg">System</div>
@@ -975,7 +975,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
   </div>
 
   <!-- Weekly Mission Widget -->
-  <div class="mission-widget" id="missionWidget">
+  <div class="mission-widget" id="missionWidget" style="display:none;">
     <div class="mw-header">
       <div class="mw-title">📋 THIS WEEK'S MISSIONS</div>
       <div class="mw-week" id="mw-week-label"></div>
@@ -1978,7 +1978,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
     <div class="mob-drawer-item" onclick="goPageFromDrawer('summary')"><span class="dico">🤖</span><span class="dlbl">AI Summary</span></div>
     <div class="mob-drawer-item" onclick="goPageFromDrawer('dream')"><span class="dico">🎯</span><span class="dlbl">Dream</span></div>
     <div class="mob-drawer-item" onclick="goPageFromDrawer('path')"><span class="dico">🏆</span><span class="dlbl">Path to Pro</span></div>
-    <div class="mob-drawer-item" onclick="goPageFromDrawer('challenges')"><span class="dico">🎯</span><span class="dlbl">Challenges</span></div>
+    <!-- Challenges hidden -->
     <div class="mob-drawer-item" onclick="goPageFromDrawer('trophies')"><span class="dico">🏅</span><span class="dlbl">Trophies</span></div>
     <div class="mob-drawer-item" onclick="goPageFromDrawer('capital')"><span class="dico">💰</span><span class="dlbl">Capital</span></div>
     <div class="mob-drawer-item" onclick="goPageFromDrawer('settings')"><span class="dico">⚙️</span><span class="dlbl">Settings</span></div>
@@ -2014,9 +2014,15 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
       <div class="fg"><label>Exit (₹)</label><input type="number" id="t-ex" step="0.05" oninput="pvw()"></div>
       <div class="fg"><label>Qty / Lots</label><input type="number" id="t-qt" value="1" oninput="pvw()"></div>
     </div>
-    <div class="fg" style="margin-bottom:10px;">
-      <label>Emotion</label>
-      <select id="t-em"><option>Calm 😌</option><option>Confident 💪</option><option>Focused 🎯</option><option>Neutral 😐</option><option>Anxious 😰</option><option>Greedy 🤑</option><option>FOMO 😱</option><option>Revenge 😤</option></select>
+    <div class="fr" style="margin-bottom:10px;">
+      <div class="fg">
+        <label>Stop Loss (₹)</label>
+        <input type="number" id="t-sl-q" step="0.05" placeholder="e.g. 85" oninput="syncQuickSL()">
+      </div>
+      <div class="fg">
+        <label>Emotion</label>
+        <select id="t-em"><option>Calm 😌</option><option>Confident 💪</option><option>Focused 🎯</option><option>Neutral 😐</option><option>Anxious 😰</option><option>Greedy 🤑</option><option>FOMO 😱</option><option>Revenge 😤</option></select>
+      </div>
     </div>
   </div>
   <!-- FULL DETAILS -->
@@ -3534,6 +3540,7 @@ function editTrade(id){
   E('t-rl').value=t.rl||'Yes';
   E('t-nt').value=t.nt||'';
   E('t-edit-id').value=id;
+  if(E('t-sl-q')) E('t-sl-q').value=t.sl||'';
   E('tradeModalTitle').textContent='✏️ Edit Trade';
   E('tradeSubmitBtn').textContent='💾 Update Trade';
   updateStratOpts();
@@ -4817,7 +4824,7 @@ function renderTrophyPage(){ renderTrophies(); }
 
 /* _importTrades declared at top */  // parsed + matched trades waiting for confirmation
 
-/* ── STEP 1: Parse CSV ── */
+/* ── STEP 1: Parse CSV (supports both Tradebook and Orderbook) ── */
 function importFyersCSV(input) {
   const file = input.files[0];
   if (!file) return;
@@ -4837,41 +4844,52 @@ function importFyersCSV(input) {
   input.value = '';
 }
 
-/* ── PARSE & MATCH ── */
+/* ── AUTO-DETECT FORMAT: Tradebook vs Orderbook ── */
 function parseFyersCSV(raw) {
   const lines = raw.split('\n');
-  // Find header row
   let headerIdx = -1;
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].startsWith('Symbol,')) { headerIdx = i; break; }
   }
   if (headerIdx === -1) throw new Error('Could not find data header row');
 
-  // Parse CSV rows (handle quoted fields)
   const dataLines = lines.slice(headerIdx).join('\n');
   const rows = parseCSVRows(dataLines);
   if (rows.length < 2) throw new Error('No execution data found');
 
   const headers = rows[0];
+
+  // Detect format by headers
+  // Tradebook: has "Total value" and "Date & time" (lowercase t)
+  // Orderbook: has "Status" and "Date & Time" (uppercase T), "Limit price"
+  const isOrderbook = headers.includes('Status') || headers.includes('Limit price') ||
+                      headers.includes('Date & Time');
+
   const symIdx   = headers.indexOf('Symbol');
-  const dtIdx    = headers.indexOf('Date & time');
+  const dtIdx    = isOrderbook ? headers.indexOf('Date & Time') : headers.indexOf('Date & time');
   const sideIdx  = headers.indexOf('Side');
   const qtyIdx   = headers.indexOf('Qty');
   const priceIdx = headers.indexOf('Traded price');
+  const statusIdx = headers.indexOf('Status');
 
   const executions = [];
   for (let i = 1; i < rows.length; i++) {
     const r = rows[i];
     if (!r[symIdx]) continue;
+    // For orderbook: skip non-executed orders
+    if (isOrderbook && statusIdx !== -1 && r[statusIdx].trim() !== 'Executed') continue;
+
     executions.push({
-      sym:   r[symIdx].trim(),
-      time:  r[dtIdx] ? r[dtIdx].trim() : '',
-      side:  r[sideIdx] ? r[sideIdx].trim().toUpperCase() : '',
-      qty:   parseInt((r[qtyIdx]||'0').replace(/,/g,'')) || 0,
-      price: parseFloat((r[priceIdx]||'0').replace(/,/g,'')) || 0,
+      sym:      r[symIdx].trim(),
+      time:     r[dtIdx] ? r[dtIdx].trim() : '',
+      side:     r[sideIdx] ? r[sideIdx].trim().toUpperCase() : '',
+      qty:      parseInt((r[qtyIdx]||'0').replace(/,/g,'')) || 0,
+      price:    parseFloat((r[priceIdx]||'0').replace(/,/g,'')) || 0,
+      isOrderbook,
     });
   }
 
+  if (!executions.length) throw new Error('No executed trades found');
   return matchExecutions(executions);
 }
 
@@ -4906,14 +4924,22 @@ function matchExecutions(execs) {
   // Step 1: Parse timestamps for sorting
   function parseExecTime(str) {
     if (!str) return 0;
-    // "06 Apr 2026, 09:32:41 AM"
-    const m = str.match(/(\d{2})\s+(\w{3})\s+(\d{4}),\s+(\d{2}:\d{2}:\d{2})\s+(AM|PM)/);
-    if (!m) return 0;
-    const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
-    let [h, min, s] = m[4].split(':').map(Number);
-    if (m[5] === 'PM' && h !== 12) h += 12;
-    if (m[5] === 'AM' && h === 12) h = 0;
-    return new Date(parseInt(m[3]), months[m[2]], parseInt(m[1]), h, min, s).getTime();
+    // Format 1: Tradebook "06 Apr 2026, 09:32:41 AM"
+    const m1 = str.match(/(\d{2})\s+(\w{3})\s+(\d{4}),\s+(\d{2}:\d{2}:\d{2})\s+(AM|PM)/);
+    if (m1) {
+      const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+      let [h, min, s] = m1[4].split(':').map(Number);
+      if (m1[5] === 'PM' && h !== 12) h += 12;
+      if (m1[5] === 'AM' && h === 12) h = 0;
+      return new Date(parseInt(m1[3]), months[m1[2]], parseInt(m1[1]), h, min, s).getTime();
+    }
+    // Format 2: Orderbook "07-04-2026 13:28:39" (DD-MM-YYYY HH:MM:SS)
+    const m2 = str.match(/^(\d{2})-(\d{2})-(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/);
+    if (m2) {
+      return new Date(parseInt(m2[3]), parseInt(m2[2])-1, parseInt(m2[1]),
+                      parseInt(m2[4]), parseInt(m2[5]), parseInt(m2[6])).getTime();
+    }
+    return 0;
   }
 
   // Step 2: Group by symbol first
@@ -5092,17 +5118,29 @@ function parseFyersSymbol(sym) {
 /* ── DATE/TIME HELPERS ── */
 function parseTradeDate(timeStr) {
   if (!timeStr) return new Date().toISOString().slice(0,10);
-  // "06 Apr 2026, 09:32:41 AM"
-  const m = timeStr.match(/(\d{2})\s+(\w{3})\s+(\d{4})/);
-  if (!m) return new Date().toISOString().slice(0,10);
-  const months = {Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',
-                  Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12'};
-  return m[3] + '-' + (months[m[2]]||'01') + '-' + m[1];
+  // Format 1: Tradebook "06 Apr 2026, 09:32:41 AM"
+  const m1 = timeStr.match(/(\d{2})\s+(\w{3})\s+(\d{4})/);
+  if (m1) {
+    const months = {Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',
+                    Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12'};
+    return m1[3] + '-' + (months[m1[2]]||'01') + '-' + m1[1];
+  }
+  // Format 2: Orderbook "07-04-2026 13:28:39" (DD-MM-YYYY)
+  const m2 = timeStr.match(/^(\d{2})-(\d{2})-(\d{4})/);
+  if (m2) return m2[3] + '-' + m2[2] + '-' + m2[1];  // → YYYY-MM-DD
+  // Format 3: Already YYYY-MM-DD
+  const m3 = timeStr.match(/^(\d{4}-\d{2}-\d{2})/);
+  if (m3) return m3[1];
+  return new Date().toISOString().slice(0,10);
 }
 function parseTradeTime(timeStr) {
   if (!timeStr) return '09:30';
-  const m = timeStr.match(/(\d{2}:\d{2})/);
-  return m ? m[1] : '09:30';
+  // Orderbook: "07-04-2026 13:28:39" → extract HH:MM
+  const m1 = timeStr.match(/\s+(\d{2}:\d{2})/);
+  if (m1) return m1[1];
+  // Tradebook: "06 Apr 2026, 09:32:41 AM" → extract HH:MM
+  const m2 = timeStr.match(/(\d{2}:\d{2})/);
+  return m2 ? m2[1] : '09:30';
 }
 
 /* ── STEP 1: RENDER PREVIEW ── */
@@ -6349,5 +6387,13 @@ async function fetchWithTimeout(url, timeout=8000){
 /* ════════════════════════════════════════════════════════════
    END SHEETS LOADER
 ════════════════════════════════════════════════════════════ */
+
+
+function syncQuickSL(){
+  const val = E('t-sl-q') ? E('t-sl-q').value : '';
+  const slFull = E('t-sl');
+  if(slFull && val) slFull.value = val;
+  pvw();
+}
 
 </script>
