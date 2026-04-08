@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Praveen · Trading Intelligence OS v3</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800;12..96,900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Firebase Realtime Database for cross-device sync -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -1844,43 +1844,46 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
   </div>
   <div class="stab-pane" id="stab-connection">
 
-    <!-- Firebase Sync Card -->
+    <!-- Supabase Sync Card -->
     <div class="card mb12" style="border-color:rgba(74,144,245,.25);background:linear-gradient(145deg,rgba(74,144,245,.06),transparent);">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
         <div style="display:flex;align-items:center;gap:8px;">
-          <span style="font-size:18px;">🔥</span>
+          <span style="font-size:18px;">🗄️</span>
           <div>
-            <div class="ct">Firebase Real-time Sync</div>
-            <div style="font-size:10px;color:var(--text3);">Instant cross-device sync — mobile + web, always in sync</div>
+            <div class="ct">Supabase Database Sync</div>
+            <div style="font-size:10px;color:var(--text3);">PostgreSQL database with real-time sync</div>
           </div>
         </div>
-        <div id="fbStatus" style="font-size:11px;font-weight:700;color:var(--text3);">⚫ Not connected</div>
+        <div id="supabaseStatus" style="font-size:11px;font-weight:700;color:var(--text3);">⚫ Not connected</div>
       </div>
 
-      <!-- Config input (hidden when connected) -->
-      <div id="fbConfigArea">
+      <!-- Config input -->
+      <div id="supabaseConfigArea">
         <div class="fg">
-          <label>Firebase Config JSON</label>
-          <textarea id="fbConfigInput" rows="6" placeholder='{&#10;  "apiKey": "...",&#10;  "authDomain": "your-app.firebaseapp.com",&#10;  "databaseURL": "https://your-app-default-rtdb.firebaseio.com",&#10;  "projectId": "your-app",&#10;  "storageBucket": "your-app.appspot.com",&#10;  "messagingSenderId": "...",&#10;  "appId": "..."&#10;}' style="font-size:11px;font-family:var(--mono);min-height:130px;"></textarea>
+          <label>Supabase Project URL</label>
+          <input id="supabaseUrl" placeholder="https://your-project.supabase.co" style="font-size:11px;">
         </div>
-        <button class="btn bam bful" onclick="saveFbConfig()" style="background:linear-gradient(135deg,#4a90f5,#6ab0ff);margin-top:4px;">🔥 Connect Firebase</button>
+        <div class="fg">
+          <label>Supabase Anon Key</label>
+          <input id="supabaseKey" type="password" placeholder="your-anon-key" style="font-size:11px;">
+        </div>
+        <button class="btn bam bful" onclick="saveSupabaseConfig()" style="background:linear-gradient(135deg,#3ecf8e,#24b47e);margin-top:4px;">🗄️ Connect Supabase</button>
         <div style="margin-top:14px;padding:12px;background:var(--panel3);border-radius:var(--r2);">
-          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;">📋 One-time setup (3 minutes, free)</div>
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;">📋 Setup Instructions</div>
           <div style="font-size:11px;color:var(--text2);line-height:2;">
-            1. Go to <strong>console.firebase.google.com</strong> → Create project<br>
-            2. Build → <strong>Realtime Database</strong> → Create database (Start in test mode)<br>
-            3. Project Settings → Your apps → <strong>Add app (Web)</strong><br>
-            4. Copy the <strong>firebaseConfig</strong> object → paste above<br>
-            5. Click <strong>Connect Firebase</strong> — done! ✓
+            1. Go to <strong>supabase.com</strong> → Create project<br>
+            2. Go to Settings → API → Copy Project URL and anon key<br>
+            3. Paste above → Click <strong>Connect Supabase</strong><br>
+            4. Run the SQL schema from supabase_schema.sql<br>
+            5. Your data will sync automatically! ✓
           </div>
         </div>
       </div>
 
       <!-- Connected state -->
       <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
-        <button id="fbDisconnectBtn" class="btn bdgr" style="display:none;" onclick="disconnectFirebase()">Disconnect Firebase</button>
-        <button class="btn bgh" onclick="fbSave().then(()=>toast('Pushed to Firebase ✓','ok'))">⬆ Push Now</button>
-        <button class="btn bgh" onclick="fbLoad().then(r=>{if(r){applyRemoteData(r);renderAll();toast('Pulled from Firebase ✓','ok');}else toast('No remote data','err')})">⬇ Pull Now</button>
+        <button id="supabaseDisconnectBtn" class="btn bdgr" style="display:none;" onclick="disconnectSupabase()">Disconnect Supabase</button>
+        <button class="btn bgh" onclick="syncNow()">⬆ Push Now</button>
       </div>
     </div>
 
@@ -2402,6 +2405,12 @@ let _fbDB = null;
 let _fbRef = null;
 let _fbListener = null;
 let _fbConfig = (function(){ try { return JSON.parse(localStorage.getItem('tios_fb_config')||'null'); } catch(e){ return null; } })();
+
+// Supabase configuration
+let _supabaseUrl = localStorage.getItem('tios_supabase_url') || 'YOUR_SUPABASE_URL';
+let _supabaseKey = localStorage.getItem('tios_supabase_key') || 'YOUR_SUPABASE_ANON_KEY';
+let _supabase = null;
+
 let THEME=localStorage.getItem('tios_theme')||'dark';
 let APERIOD='month';
 let ASTART=null,AEND=null;
@@ -2422,6 +2431,15 @@ function scfg(){localStorage.setItem('tios_cfg',JSON.stringify(CFG));fbSave();}
    BOOT
 ════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', async ()=>{
+  // Auto-init Supabase if config was previously saved
+  if (_supabaseUrl && _supabaseKey && _supabaseUrl !== 'YOUR_SUPABASE_URL') {
+    initSupabase();
+    E('supabaseStatus').textContent = '🟢 Connected';
+    E('supabaseStatus').style.color = 'var(--emerald)';
+    E('supabaseConfigArea').style.display = 'none';
+    E('supabaseDisconnectBtn').style.display = 'inline-flex';
+  }
+
   // Auto-init Firebase if config was previously saved
   if (_fbConfig) { try { initFirebase(_fbConfig); } catch(e){} }
 
@@ -2597,7 +2615,16 @@ function mtx(trades){
     if(p.net>0){W.push(p.net);ws++;ls=0;}else{L.push(p.net);ls++;ws=0;}
     mws=Math.max(mws,ws);mls=Math.max(mls,ls);
     rp+=p.net;if(rp>pk)pk=rp;dd=Math.max(dd,pk-rp);
-    const r=parseFloat(t.rr||0);if(r>0){rrs+=r;rrc++;mxr=Math.max(mxr,r);}
+    // Calculate actual R:R for wins
+    if(p.net > 0){
+      const risk = t.dir === 'Long' ? t.en - t.sl : t.sl - t.en;
+      if(risk > 0){
+        const actualRR = p.net / risk;
+        rrs += actualRR;
+        rrc++;
+        mxr = Math.max(mxr, actualRR);
+      }
+    }
     // Auto discipline from rules
     const autoDisc=calcAutoDisc(t);
     ds+=autoDisc;
@@ -5503,6 +5530,56 @@ function disconnectFirebase() {
   toast('Firebase disconnected','ok');
 }
 
+function initSupabase(){
+  if(_supabase) return _supabase;
+  if(!_supabaseUrl || !_supabaseKey) {
+    console.warn('Supabase not configured');
+    return null;
+  }
+  try {
+    _supabase = supabase.createClient(_supabaseUrl, _supabaseKey);
+    return _supabase;
+  } catch(e) {
+    console.error('Supabase init failed:', e);
+    return null;
+  }
+}
+
+function saveSupabaseConfig(){
+  const url = E('supabaseUrl').value.trim();
+  const key = E('supabaseKey').value.trim();
+  if(!url || !key){
+    toast('Please enter both URL and key','err');
+    return;
+  }
+  _supabaseUrl = url;
+  _supabaseKey = key;
+  localStorage.setItem('tios_supabase_url', url);
+  localStorage.setItem('tios_supabase_key', key);
+  if(initSupabase()){
+    toast('Supabase connected! ✓','ok');
+    E('supabaseStatus').textContent = '🟢 Connected';
+    E('supabaseStatus').style.color = 'var(--emerald)';
+    E('supabaseConfigArea').style.display = 'none';
+    E('supabaseDisconnectBtn').style.display = 'inline-flex';
+  } else {
+    toast('Connection failed','err');
+  }
+}
+
+function disconnectSupabase(){
+  _supabase = null;
+  _supabaseUrl = '';
+  _supabaseKey = '';
+  localStorage.removeItem('tios_supabase_url');
+  localStorage.removeItem('tios_supabase_key');
+  E('supabaseStatus').textContent = '⚫ Not connected';
+  E('supabaseStatus').style.color = 'var(--text3)';
+  E('supabaseConfigArea').style.display = 'block';
+  E('supabaseDisconnectBtn').style.display = 'none';
+  toast('Supabase disconnected','ok');
+}
+
 function startFbListener() {
   if (!_fbRef) return;
   if (_fbListener) { try { _fbRef.off('value', _fbListener); } catch(e){} }
@@ -5698,21 +5775,26 @@ function disconnectSync(){
 
 /* ── SYNC ENGINE ── */
 async function push(action, payload){
-  if(!WS) return;
+  const supabase = initSupabase();
+  if(!supabase) return;
+
   _pendingSync++;
   localStorage.setItem('tios_pending_sync', _pendingSync);
   updateSyncUI();
 
   try {
-    // Use no-cors mode for POST — avoids CORS preflight
-    // Apps Script receives the data; we can't read the response in no-cors mode
-    // but the data is written to Sheets successfully
-    await fetch(WS, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: JSON.stringify({ action, payload }),
-    });
-    // Assume success (no-cors can't read response)
+    if(action === 'addTrade'){
+      const { error } = await supabase.from('trades').upsert(payload.trade);
+      if(error) throw error;
+    } else if(action === 'updateTrade'){
+      const { error } = await supabase.from('trades').update(payload.trade).eq('id', payload.trade.id);
+      if(error) throw error;
+    } else if(action === 'addNote'){
+      const { error } = await supabase.from('notes').upsert({ date: payload.date, content: payload.content });
+      if(error) throw error;
+    }
+    // Add more actions as needed
+
     _pendingSync = Math.max(0, _pendingSync - 1);
     localStorage.setItem('tios_pending_sync', _pendingSync);
     _lastSyncTime = new Date().toISOString();
@@ -5727,8 +5809,16 @@ async function push(action, payload){
 }
 
 async function syncNow(){
-  if(!WS){ toast('Not connected. Go to Settings → Connection.','err'); return; }
-  if(_syncInProgress){ toast('Sync already in progress…','ok'); return; }
+  const supabase = initSupabase();
+  if(!supabase){
+    toast('Supabase not configured', 'err');
+    return;
+  }
+
+  if(_syncInProgress){
+    toast('Sync already in progress…','ok');
+    return;
+  }
   _syncInProgress = true;
 
   const btn = E('syncNowBtn');
@@ -5736,30 +5826,38 @@ async function syncNow(){
   showSyncProgress(true, 'Starting full sync…', 0);
 
   try {
-    const payload = buildFullPayload();
-    showSyncProgress(true, 'Sending trades…', 20);
-
-    await fetch(WS, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: JSON.stringify({ action: 'syncAll', payload }),
-    });
-    showSyncProgress(true, 'Completing…', 70);
-    await delay(500);
-    // no-cors mode: assume success if no exception thrown
-    if(true){
-      _lastSyncTime = new Date().toISOString();
-      _pendingSync = 0;
-      localStorage.setItem('tios_last_sync', _lastSyncTime);
-      localStorage.setItem('tios_pending_sync', '0');
-      setConn('ok', 'Connected ✓');
-      showSyncProgress(true, '✅ Sync complete!', 100);
-      toast('✅ All data synced to Google Sheets!','ok');
-      setTimeout(()=>showSyncProgress(false,'',0), 2000);
-      updateSyncUI();
-    } else {
-      throw new Error(data.message || 'Sync failed');
+    // Sync trades
+    showSyncProgress(true, 'Syncing trades…', 20);
+    for(const trade of D.trades || []){
+      const { error } = await supabase.from('trades').upsert(trade);
+      if(error) throw error;
     }
+
+    // Sync notes
+    showSyncProgress(true, 'Syncing notes…', 40);
+    for(const [date, content] of Object.entries(D.notes || {})){
+      const { error } = await supabase.from('notes').upsert({ date, content });
+      if(error) throw error;
+    }
+
+    // Sync capital
+    showSyncProgress(true, 'Syncing capital…', 60);
+    for(const cap of D.capital || []){
+      const { error } = await supabase.from('capital').upsert(cap);
+      if(error) throw error;
+    }
+
+    // Sync checklist
+    showSyncProgress(true, 'Syncing checklist…', 80);
+    for(const item of D.checklist || []){
+      const { error } = await supabase.from('checklist').upsert(item);
+      if(error) throw error;
+    }
+
+    showSyncProgress(true, '✅ Sync complete!', 100);
+    toast('✅ All data synced to Supabase!','ok');
+    setTimeout(()=>showSyncProgress(false,'',0), 2000);
+    updateSyncUI();
   } catch(e) {
     showSyncProgress(false,'',0);
     toast('Sync failed: ' + e.message,'err');
@@ -6561,12 +6659,12 @@ async function loadFromSheetsOrLocal(){
     }
   }
 
-  // ── Fall back to Google Sheets ──
-  setLoaderMsg('Connecting to Google Sheets…', 10);
+  // ── Fall back to Supabase ──
+  setLoaderMsg('Connecting to Supabase…', 10);
 
-  // Check if WS URL is configured
-  if(!WS){
-    setLoaderMsg('No sync configured — using local data', 80, 'Go to Settings → Connection to set up Firebase sync');
+  const supabase = initSupabase();
+  if(!supabase){
+    setLoaderMsg('Supabase not configured — using local data', 80, 'Configure Supabase URL and key in the code');
     await delay(800);
     loadFromLocal();
     hideLoader();
@@ -6576,84 +6674,83 @@ async function loadFromSheetsOrLocal(){
   try {
     setLoaderMsg('Fetching your data…', 30, 'Loading trades, rules, challenges…');
 
-    // Fetch all data from Sheets
-    let response, result;
-    try {
-      response = await fetchWithTimeout(WS + '?action=loadAll', 10000);
-      result = await response.json();
-    } catch(fetchErr) {
-      throw new Error('Could not reach Google Sheets: ' + fetchErr.message);
-    }
+    // Fetch all data from Supabase
+    const { data: trades, error: tradesError } = await supabase.from('trades').select('*');
+    const { data: notes, error: notesError } = await supabase.from('notes').select('*');
+    const { data: capital, error: capitalError } = await supabase.from('capital').select('*');
+    const { data: checklist, error: checklistError } = await supabase.from('checklist').select('*');
+    const { data: rules, error: rulesError } = await supabase.from('rules').select('*');
+    const { data: challenges, error: challengesError } = await supabase.from('challenges').select('*');
+    const { data: settings, error: settingsError } = await supabase.from('user_settings').select('*');
+    const { data: xp, error: xpError } = await supabase.from('user_xp').select('*').single();
 
-    if(!result || result.status !== 'ok' || !result.data){
-      throw new Error(result ? (result.message || 'No data returned') : 'Empty response');
+    if(tradesError || notesError || capitalError || checklistError || rulesError || challengesError || settingsError || xpError){
+      throw new Error('Supabase query failed');
     }
 
     setLoaderMsg('Processing data…', 70, 'Applying your trades and rules…');
     await delay(200);
 
-    const data = result.data;
-
     // ── Apply data to app ──
     // Trades
-    if(data.trades && data.trades.length > 0){
-      D.trades = data.trades;
+    if(trades && trades.length > 0){
+      D.trades = trades;
     }
-    // Notes
-    if(data.notes && Object.keys(data.notes).length > 0){
-      D.notes = data.notes;
-    }
-    // Capital
-    if(data.capital && data.capital.length > 0){
-      D.capital = data.capital;
-    }
-    // Checklist — only restore if sheet has it
-    if(data.checklist && data.checklist.length > 0){
-      // Keep existing checklist structure, just update done states
-      D.checklist = D.checklist.map(item => {
-        const sheetItem = data.checklist.find(s=>s.text===item.text);
-        return sheetItem ? {...item, done: sheetItem.done} : item;
+    // Notes - convert array to object
+    if(notes && notes.length > 0){
+      D.notes = {};
+      notes.forEach(note => {
+        D.notes[note.date] = note.content;
       });
     }
-    // Rules — prefer Sheets over local if Sheets has rules
-    if(data.rules && data.rules.length > 0){
-      D.rules = data.rules;
+    // Capital
+    if(capital && capital.length > 0){
+      D.capital = capital;
     }
-    // Settings/CFG
-    if(data.cfg && Object.keys(data.cfg).length > 0){
-      CFG = {...defCfg(), ...data.cfg};
-      scfg();
+    // Checklist
+    if(checklist && checklist.length > 0){
+      D.checklist = checklist.map(item => ({
+        id: item.id,
+        text: item.text,
+        type: item.type,
+        done: item.done
+      }));
     }
-    // XP/Engagement — merge with local (keep badges which aren't in Sheets)
-    if(data.xp){
-      ENG.xp = data.xp.xp || ENG.xp;
-      ENG.level = data.xp.level || ENG.level;
-      ENG.discipline_streak = data.xp.discipline_streak || ENG.discipline_streak;
-      ENG.best_streak = data.xp.best_streak || ENG.best_streak;
+    // Rules
+    if(rules && rules.length > 0){
+      D.rules = rules;
     }
-    // Challenges — prefer Sheets
-    if(data.challenges){
-      if(data.challenges.challenges && data.challenges.challenges.length >= 0){
-        ENG.challenges = data.challenges.challenges;
-      }
-      if(data.challenges.completed_challenges && data.challenges.completed_challenges.length >= 0){
-        ENG.completed_challenges = data.challenges.completed_challenges;
-      }
+    // Challenges
+    if(challenges && challenges.length > 0){
+      ENG.challenges = challenges.filter(c => !c.completed);
+      ENG.completed_challenges = challenges.filter(c => c.completed);
     }
-
+    // Settings
+    if(settings && settings.length > 0){
+      settings.forEach(setting => {
+        CFG[setting.key] = setting.value;
+      });
+    }
+    // XP
+    if(xp){
+      ENG.xp = xp.xp || 0;
+      ENG.level = xp.level || 1;
+      ENG.discipline_streak = xp.discipline_streak || 0;
+      ENG.best_streak = xp.best_streak || 0;
+    }
     // Save to local cache
     sv();
     saveEng();
     scfg();
 
-    setLoaderMsg('Ready!', 100, `Loaded ${D.trades.length} trades`);
+    setLoaderMsg('Ready!', 100, `Loaded ${D.trades.length} trades from Supabase`);
     _sheetsLoaded = true;
-    setConn('ok', 'Connected ✓');
+    setConn('ok', 'Supabase ✓');
 
     await delay(500);
     hideLoader();
 
-    // Render app with Sheets data
+    // Render app with Supabase data
     bootApp();
 
   } catch(err) {
