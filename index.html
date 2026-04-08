@@ -1884,6 +1884,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
         <button class="btn bam" style="flex:2;" onclick="saveAndConn()">⚡ Save & Connect</button>
         <button class="btn bdgr" style="flex:1;" onclick="disconnectSync()">Disconnect</button>
       </div>
+      <div id="bakeUrlWrap"></div>
       <div style="margin-top:14px;padding:12px;background:var(--panel3);border-radius:var(--r2);">
         <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;">📋 One-time setup (5 minutes)</div>
         <div style="font-size:11px;color:var(--text2);line-height:1.9;">
@@ -2339,7 +2340,10 @@ const PAGE_TITLES={home:'Home',playbook:'Playbook',challenges:'Challenges',troph
 /* ════════════════════════════════════════
    STATE
 ════════════════════════════════════════ */
-let WS=localStorage.getItem('tios_ws')||'';
+// ── SHEETS URL: Set this once and bake into HTML ──
+// Change SHEETS_URL below after deploying your Apps Script
+const SHEETS_URL = '';  // <-- paste your Apps Script URL here after first setup
+let WS = SHEETS_URL || localStorage.getItem('tios_ws') || '';
 let THEME=localStorage.getItem('tios_theme')||'dark';
 let APERIOD='month';
 let ASTART=null,AEND=null;
@@ -2478,15 +2482,15 @@ function seedD(){
     const now=new Date(),y=now.getFullYear(),m=now.getMonth();
     const dd=(day,mo=0)=>new Date(y,m-mo,day).toISOString().slice(0,10);
     D.trades=[
-      {id:'T001',dt:dd(7),tm:'10:15',sym:'NIFTY',dir:'Long',strat:'CPR Trend',en:120,ex:195,qt:75,bk:42,sl:100,tg:200,rr:2.5,rp:0.9,sq:'A+',pl:'Yes',rl:'Yes',em:'Calm 😌',nt:'Perfect CPR entry. Held conviction.'},
-      {id:'T002',dt:dd(9),tm:'11:30',sym:'BANKNIFTY',dir:'Long',strat:'Reversal',en:85,ex:62,qt:25,bk:28,sl:75,tg:115,rr:2.0,rp:0.6,sq:'A',pl:'Yes',rl:'Yes',em:'Calm 😌',nt:'Good setup, news reversal.'},
-      {id:'T003',dt:dd(14),tm:'09:45',sym:'NIFTY',dir:'Long',strat:'CPR Trend',en:95,ex:175,qt:75,bk:42,sl:80,tg:175,rr:2.0,rp:0.95,sq:'A+',pl:'Yes',rl:'Yes',em:'Confident 💪',nt:'Strong trend.'},
-      {id:'T004',dt:dd(16),tm:'10:00',sym:'NIFTY',dir:'Long',strat:'Swing Breakout',en:140,ex:230,qt:75,bk:42,sl:120,tg:240,rr:2.5,rp:1.0,sq:'A+',pl:'Yes',rl:'Yes',em:'Calm 😌',nt:'Textbook breakout.'},
-      {id:'T005',dt:dd(21),tm:'11:00',sym:'NIFTY',dir:'Long',strat:'CPR Trend',en:70,ex:48,qt:75,bk:42,sl:58,tg:100,rr:2.0,rp:0.7,sq:'B',pl:'Yes',rl:'Yes',em:'Neutral 😐',nt:'CPR not clear.'},
-      {id:'T006',dt:dd(23),tm:'10:30',sym:'BANKNIFTY',dir:'Long',strat:'Opening Range',en:180,ex:310,qt:25,bk:28,sl:155,tg:310,rr:2.0,rp:0.9,sq:'A',pl:'Yes',rl:'Yes',em:'Confident 💪',nt:'Clean ORB.'},
-      {id:'T007',dt:dd(4,1),tm:'10:00',sym:'NIFTY',dir:'Long',strat:'CPR Trend',en:115,ex:205,qt:75,bk:42,sl:95,tg:210,rr:2.5,rp:0.95,sq:'A+',pl:'Yes',rl:'Yes',em:'Calm 😌',nt:''},
-      {id:'T008',dt:dd(11,1),tm:'11:15',sym:'NIFTY',dir:'Long',strat:'CPR Trend',en:55,ex:35,qt:75,bk:42,sl:44,tg:90,rr:2.0,rp:0.55,sq:'C',pl:'No',rl:'No',em:'FOMO 😱',nt:'FOMO entry. Violated rules. Lesson: always wait.'},
-      {id:'T009',dt:dd(13,1),tm:'10:15',sym:'BANKNIFTY',dir:'Long',strat:'Reversal',en:210,ex:370,qt:25,bk:28,sl:180,tg:380,rr:2.0,rp:0.9,sq:'A',pl:'Yes',rl:'Yes',em:'Calm 😌',nt:''},
+      {id:'T001',source:'seed',dt:dd(7),tm:'10:15',sym:'NIFTY',dir:'Long',strat:'CPR Trend',en:120,ex:195,qt:75,bk:42,sl:100,tg:200,rr:2.5,rp:0.9,sq:'A+',pl:'Yes',rl:'Yes',em:'Calm 😌',nt:'Perfect CPR entry. Held conviction.'},
+      {id:'T002',source:'seed',dt:dd(9),tm:'11:30',sym:'BANKNIFTY',dir:'Long',strat:'Reversal',en:85,ex:62,qt:25,bk:28,sl:75,tg:115,rr:2.0,rp:0.6,sq:'A',pl:'Yes',rl:'Yes',em:'Calm 😌',nt:'Good setup, news reversal.'},
+      {id:'T003',source:'seed',dt:dd(14),tm:'09:45',sym:'NIFTY',dir:'Long',strat:'CPR Trend',en:95,ex:175,qt:75,bk:42,sl:80,tg:175,rr:2.0,rp:0.95,sq:'A+',pl:'Yes',rl:'Yes',em:'Confident 💪',nt:'Strong trend.'},
+      {id:'T004',source:'seed',dt:dd(16),tm:'10:00',sym:'NIFTY',dir:'Long',strat:'Swing Breakout',en:140,ex:230,qt:75,bk:42,sl:120,tg:240,rr:2.5,rp:1.0,sq:'A+',pl:'Yes',rl:'Yes',em:'Calm 😌',nt:'Textbook breakout.'},
+      {id:'T005',source:'seed',dt:dd(21),tm:'11:00',sym:'NIFTY',dir:'Long',strat:'CPR Trend',en:70,ex:48,qt:75,bk:42,sl:58,tg:100,rr:2.0,rp:0.7,sq:'B',pl:'Yes',rl:'Yes',em:'Neutral 😐',nt:'CPR not clear.'},
+      {id:'T006',source:'seed',dt:dd(23),tm:'10:30',sym:'BANKNIFTY',dir:'Long',strat:'Opening Range',en:180,ex:310,qt:25,bk:28,sl:155,tg:310,rr:2.0,rp:0.9,sq:'A',pl:'Yes',rl:'Yes',em:'Confident 💪',nt:'Clean ORB.'},
+      {id:'T007',source:'seed',dt:dd(4,1),tm:'10:00',sym:'NIFTY',dir:'Long',strat:'CPR Trend',en:115,ex:205,qt:75,bk:42,sl:95,tg:210,rr:2.5,rp:0.95,sq:'A+',pl:'Yes',rl:'Yes',em:'Calm 😌',nt:''},
+      {id:'T008',source:'seed',dt:dd(11,1),tm:'11:15',sym:'NIFTY',dir:'Long',strat:'CPR Trend',en:55,ex:35,qt:75,bk:42,sl:44,tg:90,rr:2.0,rp:0.55,sq:'C',pl:'No',rl:'No',em:'FOMO 😱',nt:'FOMO entry. Violated rules. Lesson: always wait.'},
+      {id:'T009',source:'seed',dt:dd(13,1),tm:'10:15',sym:'BANKNIFTY',dir:'Long',strat:'Reversal',en:210,ex:370,qt:25,bk:28,sl:180,tg:380,rr:2.0,rp:0.9,sq:'A',pl:'Yes',rl:'Yes',em:'Calm 😌',nt:''},
     ];
   }
   sv();
@@ -2885,8 +2889,11 @@ function renderDream(){
   const savings=CFG.savings||[];
   const manualSaved = parseFloat(dr.sv||0) + savings.reduce((s,sv)=>s+(parseFloat(sv.am)||0),0);
   // Include actual trading profits as progress toward dream goal
-  const tradePnl = (D.trades||[]).reduce((s,t)=>s+pnl(t).net,0);
-  const saved = manualSaved + Math.max(0, tradePnl);
+  // Exclude seed sample trades (T001-T009) from dream progress
+  const SEED_IDS = ['T001','T002','T003','T004','T005','T006','T007','T008','T009'];
+  const realTrades = (D.trades||[]).filter(t => !SEED_IDS.includes(t.id) && t.source !== 'seed');
+  const tradePnl = realTrades.reduce((s,t)=>s+pnl(t).net, 0);
+  const saved = manualSaved + tradePnl;  // count all real P&L (profit and loss)
   const target=parseFloat(dr.tgt||1);
   const pct=Math.min(100,(saved/target*100));
   // Daily target calc — auto
@@ -2937,8 +2944,11 @@ function updateDreamWidget(){
   const savings=CFG.savings||[];
   const manualSaved = parseFloat(dr.sv||0) + savings.reduce((s,sv)=>s+(parseFloat(sv.am)||0),0);
   // Include actual trading profits as progress toward dream goal
-  const tradePnl = (D.trades||[]).reduce((s,t)=>s+pnl(t).net,0);
-  const saved = manualSaved + Math.max(0, tradePnl);
+  // Exclude seed sample trades (T001-T009) from dream progress
+  const SEED_IDS = ['T001','T002','T003','T004','T005','T006','T007','T008','T009'];
+  const realTrades = (D.trades||[]).filter(t => !SEED_IDS.includes(t.id) && t.source !== 'seed');
+  const tradePnl = realTrades.reduce((s,t)=>s+pnl(t).net, 0);
+  const saved = manualSaved + tradePnl;  // count all real P&L (profit and loss)
   const target=parseFloat(dr.tgt||1);
   const pct=Math.min(100,(saved/target*100));
   const c=132;
@@ -5398,8 +5408,13 @@ function saveAndConn(){
   saveProfile();
   toast('URL saved. Testing connection…','ok');
   tryConn();
+  // Show download button so user can bake URL into HTML for mobile
+  showBakeURLOption(url);
 }
 
+/* old showBakeURLOption removed */
+/* old downloadBakedHTML removed */
+/* old showManualBakeInstructions removed */
 function disconnectSync(){
   if(!confirm('Disconnect Google Sheets sync? Your local data is unaffected.')) return;
   WS = '';
@@ -6394,6 +6409,37 @@ function syncQuickSL(){
   const slFull = E('t-sl');
   if(slFull && val) slFull.value = val;
   pvw();
+}
+
+
+/* ── BAKE URL INTO HTML FOR MOBILE ── */
+function showBakeURLOption(url){
+  const el = E('bakeUrlWrap');
+  if(!el) return;
+  el.style.display = 'block';
+  el.innerHTML = '<div style="margin-top:12px;padding:12px;background:rgba(16,201,122,.06);border:1px solid rgba(16,201,122,.2);border-radius:var(--r2);">'
+    + '<div style="font-size:12px;font-weight:700;color:var(--emerald);margin-bottom:6px;">📱 Make it work on ALL devices</div>'
+    + '<div style="font-size:11px;color:var(--text2);margin-bottom:8px;">Download an updated HTML with your Sheets URL baked in. Upload to GitHub — mobile auto-connects forever.</div>'
+    + '<button class="btn bam" onclick="downloadBakedHTML()">⬇️ Download Mobile-Ready HTML</button>'
+    + '</div>';
+}
+
+function downloadBakedHTML(){
+  const url = WS || '';
+  if(!url){ toast('Save your Apps Script URL first','err'); return; }
+  const dateStr = new Date().toLocaleDateString('en-IN');
+  const marker = "const SHEETS_URL = '';  // <-- paste your Apps Script URL here after first setup";
+  const replacement = "const SHEETS_URL = '" + url + "';  // set on " + dateStr;
+  const html = '<!DOCTYPE html>' + document.documentElement.outerHTML;
+  const updated = html.replace(marker, replacement);
+  const blob = new Blob([updated], {type:'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'EdgeMind_v5.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  toast('Downloaded! Upload to GitHub — mobile will sync automatically ✅','ok');
 }
 
 </script>
