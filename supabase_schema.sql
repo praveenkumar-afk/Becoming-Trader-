@@ -1,8 +1,5 @@
 -- Trading Dashboard Database Schema
 
--- Enable Row Level Security
-ALTER TABLE IF EXISTS auth.users ENABLE ROW LEVEL SECURITY;
-
 -- Trades table
 CREATE TABLE IF NOT EXISTS trades (
   id TEXT PRIMARY KEY,
@@ -59,7 +56,7 @@ CREATE TABLE IF NOT EXISTS checklist (
 -- Trading rules
 CREATE TABLE IF NOT EXISTS rules (
   id TEXT PRIMARY KEY,
-  desc TEXT,
+  description TEXT,
   cat TEXT,
   priority TEXT,
   weight INTEGER,
@@ -72,7 +69,7 @@ CREATE TABLE IF NOT EXISTS rules (
 CREATE TABLE IF NOT EXISTS challenges (
   id TEXT PRIMARY KEY,
   title TEXT,
-  desc TEXT,
+  description TEXT,
   type TEXT, -- 'weekly', 'monthly', 'custom'
   target INTEGER,
   current INTEGER DEFAULT 0,

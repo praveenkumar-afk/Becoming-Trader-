@@ -1794,7 +1794,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5;}
     <div class="stab on" onclick="switchSettingsTab('profile',this)">👤 Profile</div>
     <div class="stab" onclick="switchSettingsTab('data',this)">💾 Data</div>
     <div class="stab" onclick="switchSettingsTab('appearance',this)">🎨 Appearance</div>
-    <div class="stab" onclick="switchSettingsTab('connection',this)">📡 Connection</div>
+    <div class="stab" id="stab-connection-btn" onclick="switchSettingsTab('connection',this)">📡 Connection</div>
   </div>
   <div class="stab-pane on" id="stab-profile">
     <div class="g2">
@@ -2406,10 +2406,16 @@ let _fbRef = null;
 let _fbListener = null;
 let _fbConfig = (function(){ try { return JSON.parse(localStorage.getItem('tios_fb_config')||'null'); } catch(e){ return null; } })();
 
-// Supabase configuration
-let _supabaseUrl = localStorage.getItem('tios_supabase_url') || 'YOUR_SUPABASE_URL';
-let _supabaseKey = localStorage.getItem('tios_supabase_key') || 'YOUR_SUPABASE_ANON_KEY';
+// Supabase configuration — hardcoded, localStorage overrides only if set
+const _SUPABASE_URL_DEFAULT = 'https://pcatdynchoqiwrsdxemt.supabase.co';
+const _SUPABASE_KEY_DEFAULT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjYXRkeW5jaG9xaXdyc2R4ZW10Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2NjQ2MTIsImV4cCI6MjA5MTI0MDYxMn0.atrgEP8-e_NdxruBeWSuhdhEVNWjsYvfiWziztGs3gI';
+const _lsUrl = localStorage.getItem('tios_supabase_url');
+const _lsKey = localStorage.getItem('tios_supabase_key');
+let _supabaseUrl = (_lsUrl && _lsUrl !== 'YOUR_SUPABASE_URL') ? _lsUrl : _SUPABASE_URL_DEFAULT;
+let _supabaseKey = (_lsKey && _lsKey !== 'YOUR_SUPABASE_ANON_KEY') ? _lsKey : _SUPABASE_KEY_DEFAULT;
 let _supabase = null;
+let _appBooted = false;
+let _loadTimeout = null;
 
 let THEME=localStorage.getItem('tios_theme')||'dark';
 let APERIOD='month';
@@ -2431,8 +2437,17 @@ function scfg(){localStorage.setItem('tios_cfg',JSON.stringify(CFG));fbSave();}
    BOOT
 ════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', async ()=>{
+  const supabaseConfigured = _supabaseUrl && _supabaseKey && _supabaseUrl !== 'YOUR_SUPABASE_URL' && _supabaseKey !== 'YOUR_SUPABASE_ANON_KEY';
+  if (!supabaseConfigured) {
+    hideLoader();
+    goPage('settings');
+    const connectionTab = E('stab-connection-btn');
+    if (connectionTab) switchSettingsTab('connection', connectionTab);
+    return;
+  }
+
   // Auto-init Supabase if config was previously saved
-  if (_supabaseUrl && _supabaseKey && _supabaseUrl !== 'YOUR_SUPABASE_URL') {
+  if (supabaseConfigured) {
     initSupabase();
     E('supabaseStatus').textContent = '🟢 Connected';
     E('supabaseStatus').style.color = 'var(--emerald)';
@@ -2986,7 +3001,7 @@ function renderDream(){
   });
   const tradePnl = realTrades.reduce((s,t)=>s+pnl(t).net, 0);
   const saved = manualSaved + tradePnl;  // count all real P&L from startDate onward
-  const target=parseFloat(dr.tgt||1);
+  const target=parseFloat(dr.tgt||1);;
   const pct=Math.min(100,(saved/target*100));
   // Daily target calc — auto
   const deadlineDays=dr.dt?Math.max(0,Math.ceil((new Date(dr.dt)-new Date())/(86400000))):null;
@@ -3014,7 +3029,7 @@ function renderDream(){
         ${dailyTarget?`<div style="background:var(--amber3);border:1px solid rgba(240,165,0,.2);border-radius:8px;padding:8px 12px;font-size:12px;"><strong style="color:var(--amber);">Auto Daily Target: ₹${F(dailyTarget)}/trading day</strong><div style="color:var(--text3);margin-top:2px;font-size:11px;">${tradingDaysLeft} trading days left · ${deadlineDays} calendar days</div></div>`:''}
       </div>
     </div>
-  </div>`;
+  </div>`;;
   E('dreamStats').style.display='block';
   T('dr-pct',pct.toFixed(1)+'%');E('dr-pct-b').style.width=pct+'%';
   T('dr-saved','₹'+F(saved));T('dr-needed','₹'+F(needed));
@@ -3027,12 +3042,12 @@ function renderDream(){
   E('dreamMiles').innerHTML=[25,50,75,90,100].map(p=>({p,done:pct>=p,lbl:`${p}% — ₹${F(target*p/100)}`})).map(ms=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--rim);"><div style="font-size:15px;">${ms.done?'✅':'⬜'}</div><div style="font-size:12px;color:${ms.done?'var(--emerald)':'var(--text3)'};">${ms.lbl}</div></div>`).join('');
   // Chart
   let cumSv=parseFloat(dr.sv||0);
-  mk('dr-chart',{type:'line',data:{labels:savings.map(sv=>sv.dt.slice(5)),datasets:[{data:savings.map(sv=>{cumSv+=parseFloat(sv.am||0);return+cumSv.toFixed(0);}),borderColor:'#f0a500',backgroundColor:'rgba(240,165,0,.12)',fill:true,tension:0.3,pointRadius:4,pointBackgroundColor:'#f0a500'},{data:savings.map(()=>target),borderColor:'rgba(240,165,0,.2)',borderDash:[6,4],pointRadius:0}]},options:{...bo(),plugins:{legend:{display:false}}}});
+  mk('dr-chart',{type:'line',data:{labels:savings.map(sv=>sv.dt.slice(5)),datasets:[{data:savings.map(sv=>{cumSv+=parseFloat(sv.am||0);return+cumSv.toFixed(0);}),borderColor:'#f0a500',backgroundColor:'rgba(240,165,0,.12)',fill:true,tension:0.3,pointRadius:4,pointBackgroundColor:'#f0a500'},{data:savings.map(()=>target),borderColor:'rgba(240,165,0,.2)',borderDash:[6,4],pointRadius:0}]},options:{...bo(),plugins:{legend:{display:false}}}});;
 }
 
 function updateDreamWidget(){
   const dr=CFG.dream;
-  T('dwName',dr?`${dr.ico||'🎯'} ${dr.nm||'My Dream'}`:'No Goal Set');
+  T('dwName',dr?`${dr.ico||'🎯'} ${dr.nm||'My Dream'}`:'No Goal Set');;
   if(!dr){E('dwBody').innerHTML='<div style="font-size:10px;color:var(--text3);text-align:center;">Tap to set your dream →</div>';return;}
   const savings=CFG.savings||[];
   const manualSaved = parseFloat(dr.sv||0) + savings.reduce((s,sv)=>s+(parseFloat(sv.am)||0),0);
@@ -3046,10 +3061,11 @@ function updateDreamWidget(){
   });
   const tradePnl = realTrades.reduce((s,t)=>s+pnl(t).net, 0);
   const saved = manualSaved + tradePnl;  // count all real P&L from startDate onward
-  const target=parseFloat(dr.tgt||1);
+  const target=parseFloat(dr.tgt||1);;
   const pct=Math.min(100,(saved/target*100));
   const c=132;
-  E('dwBody').innerHTML=`<div style="display:flex;align-items:center;gap:9px;"><div class="dw-ring"><svg viewBox="0 0 44 44" width="44" height="44"><circle cx="22" cy="22" r="18" fill="none" stroke="rgba(240,165,0,.15)" stroke-width="5"/><circle cx="22" cy="22" r="18" fill="none" stroke="var(--amber)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${pct/100*c} ${c}"/></svg><div class="dw-rpct">${pct.toFixed(0)}%</div></div><div style="flex:1;min-width:0;"><div style="font-size:10px;color:var(--text3);">₹${F(saved)} of ₹${F(target)}</div>${dr.dt?`<div style="font-size:9px;color:var(--text3);margin-top:2px;">${Math.max(0,Math.ceil((new Date(dr.dt)-new Date())/86400000))} days left</div>`:''}</div></div><div class="dw-bar"><div class="dw-bf" style="width:${pct}%"></div></div>`;
+  E('dwBody').innerHTML=`<div style="display:flex;align-items:center;gap:9px;"><div class="dw-ring"><svg viewBox="0 0 44 44" width="44" height="44"><circle cx="22" cy="22" r="18" fill="none" stroke="rgba(240,165,0,.15)" stroke-width="5"/><circle cx="22" cy="22" r="18" fill="none" stroke="var(--amber)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${pct/100*c} ${c}"/></svg><div class="dw-rpct">${pct.toFixed(0)}%</div></div><div style="flex:1;min-width:0;"><div style="font-size:10px;color:var(--text3);">₹${F(saved)} of ₹${F(target)}</div>${dr.dt?'<div style="font-size:9px;color:var(--text3);margin-top:2px;">'+Math.max(0,Math.ceil((new Date(dr.dt)-new Date())/86400000))+' days left</div>':''}</div></div><div class="dw-bar"><div class="dw-bf" style="width:${pct}%"></div></div>`;
+}
 }
 
 /* ════════════════════════════════════════
@@ -6631,6 +6647,15 @@ function hideLoader(){
 
 /* ── MAIN LOAD FUNCTION ── */
 async function loadFromSheetsOrLocal(){
+  if (_appBooted) return;
+  _loadTimeout = setTimeout(()=>{
+    if (!_appBooted) {
+      setLoaderMsg('Load timeout — using local data', 90, 'Open Settings to connect Supabase');
+      loadFromLocal();
+      hideLoader();
+    }
+  }, 10000);
+
   // ── Try Firebase first (highest priority, real-time) ──
   if (_fbConfig) {
     setLoaderMsg('Connecting to Firebase…', 10);
@@ -6660,12 +6685,18 @@ async function loadFromSheetsOrLocal(){
   }
 
   // ── Fall back to Supabase ──
+  if (!_fbConfig && (!_supabaseUrl || _supabaseUrl === 'YOUR_SUPABASE_URL' || !_supabaseKey || _supabaseKey === 'YOUR_SUPABASE_ANON_KEY')) {
+    setLoaderMsg('Supabase not configured — using local data', 80, 'Open Settings to connect Supabase');
+    loadFromLocal();
+    hideLoader();
+    return;
+  }
+
   setLoaderMsg('Connecting to Supabase…', 10);
 
   const supabase = initSupabase();
   if(!supabase){
-    setLoaderMsg('Supabase not configured — using local data', 80, 'Configure Supabase URL and key in the code');
-    await delay(800);
+    setLoaderMsg('Supabase not configured — using local data', 80, 'Open Settings to connect Supabase');
     loadFromLocal();
     hideLoader();
     return;
@@ -6748,6 +6779,7 @@ async function loadFromSheetsOrLocal(){
     setConn('ok', 'Supabase ✓');
 
     await delay(500);
+    if(_loadTimeout) clearTimeout(_loadTimeout);
     hideLoader();
 
     // Render app with Supabase data
@@ -6760,19 +6792,33 @@ async function loadFromSheetsOrLocal(){
       navigator.onLine ? 'Sheets error: '+err.message : 'You are offline');
     setConn('', 'Offline');
     await delay(1000);
+    if(_loadTimeout) clearTimeout(_loadTimeout);
     loadFromLocal();
     hideLoader();
   }
 }
 
 function loadFromLocal(){
+  if (_appBooted) return;
+  _appBooted = true;
   // D, CFG, ENG already loaded from localStorage at script init
   // Just boot the app
   bootApp();
+  if (!_supabaseUrl || _supabaseUrl === 'YOUR_SUPABASE_URL' || !_supabaseKey || _supabaseKey === 'YOUR_SUPABASE_ANON_KEY') {
+    goPage('settings');
+    const connectionTab = E('stab-connection-btn');
+    if (connectionTab) switchSettingsTab('connection', connectionTab);
+    const loader = E('sheetsLoader');
+    if (loader) {
+      loader.style.opacity = '0';
+      setTimeout(()=>{ loader.style.display = 'none'; }, 400);
+    }
+  }
 }
 
 /* ── BOOT APP (runs after data is loaded from either source) ── */
 function bootApp(){
+  if (_appBooted !== true) _appBooted = true;
   // Apply settings to UI
   if(CFG.cap) { const el=E('s-cap'); if(el) el.value=CFG.cap; }
   if(CFG.maxl) { const el=E('s-maxl'); if(el) el.value=CFG.maxl; }
